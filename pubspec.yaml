@@ -1,0 +1,65 @@
+name: lawimmunity
+description: LawImmunnity Application to record live videos and share ewith freinds and family
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.16.1 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations: # Add this line
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  google_fonts: ^2.3.2
+  widgetbook_annotation: ^2.0.1
+  intl: ^0.17.0
+  shared_preferences: ^2.0.13
+  provider: ^6.0.2
+  cloud_firestore: ^3.1.15
+  firebase_auth: ^3.3.18
+  country_code_picker: ^2.0.2
+  auto_size_text: ^3.0.0
+  fluttertoast: ^8.0.9
+
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
+  widgetbook: ^2.1.0
+  widgetbook_generator: ^2.0.1
+
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto/Roboto-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Roboto/Roboto-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Roboto/Roboto-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto/Roboto-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Roboto/Roboto-Black.ttf
+          weight: 900
+
+    - family: Calistoga
+      fonts:
+        - asset: assets/fonts/Calistoga/Calistoga-Regular.ttf
+          weight: 400
+
+flutter_intl:
+  enabled: true
