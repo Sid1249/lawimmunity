@@ -4,8 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   String title;
+  List<Widget>? actionWidgets;
 
-  CustomAppBar({Key? key, required this.title})
+  CustomAppBar({Key? key, required this.title,this.actionWidgets})
       : preferredSize = const Size.fromHeight(42),
         super(key: key);
 
@@ -22,6 +23,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         statusBarIconBrightness: Brightness.dark, // For Android (dark icons)
         statusBarBrightness: Brightness.light, // For iOS (dark icons)
       ),
+      actions: actionWidgets??[],
       iconTheme: const IconThemeData(
         color: Colors.black, //change your color here
       ),

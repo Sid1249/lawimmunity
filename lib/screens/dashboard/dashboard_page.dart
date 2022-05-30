@@ -1,8 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lawimmunity/screens/home_redirect_page.dart';
 import 'package:lawimmunity/screens/location_page/location_page.dart';
+import 'package:lawimmunity/screens/nominess_page/nominees_page.dart';
+import 'package:lawimmunity/screens/settings_page/settings_page.dart';
 import 'package:lawimmunity/screens/timeline_page/timeline_page.dart';
 import 'package:lawimmunity/widgets/appbar.dart';
 import 'package:lawimmunity/widgets/custom_raised_button.dart';
@@ -56,12 +56,18 @@ class DashboardPage extends StatelessWidget {
                   SingleDashboardButton(
                     text: 'Nominees',
                     icon: Icons.spatial_audio_off,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const NomineesPage()));
+                    },
                   ),
                   SingleDashboardButton(
                     text: 'Settings',
                     icon: Icons.settings_sharp,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const SettingsPage()));
+                    },
                   ),
                 ],
               ),

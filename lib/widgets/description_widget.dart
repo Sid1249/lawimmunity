@@ -25,7 +25,7 @@ class DescriptionText extends StatelessWidget {
                 fontSize: 18.87,
                 letterSpacing: 2.19,
                 color: Theme.of(context).colorScheme.inversePrimary,
-                fontWeight: FontWeight.w500)),
+                fontWeight: FontWeight.w400)),
       ),
       Padding(
         padding: edgeInsetsBottom,
@@ -34,7 +34,7 @@ class DescriptionText extends StatelessWidget {
               fontSize: 10.53,
               letterSpacing: 2.54,
               color: Theme.of(context).colorScheme.inversePrimary,
-              fontWeight: FontWeight.w400),),
+              fontWeight: FontWeight.w500),),
       )
 
     ],);

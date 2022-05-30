@@ -5,6 +5,7 @@ import 'package:lawimmunity/screens/timeline_page/timeline_widget.dart';
 import 'package:lawimmunity/widgets/custom_app_bar.dart';
 import 'package:lawimmunity/widgets/custom_raised_button.dart';
 import 'package:lawimmunity/widgets/description_widget.dart';
+import 'package:lawimmunity/widgets/list_empty_container.dart';
 import 'package:lawimmunity/widgets/location_head_widget.dart';
 import 'package:lawimmunity/widgets/text_component.dart';
 import 'package:lawimmunity/widgets/timeline.dart';
@@ -18,12 +19,11 @@ class TimelinePage extends StatefulWidget {
 
 class _TimelinePageState extends State<TimelinePage> {
   bool reversed = false;
-  List<Widget> listTimeLineVideos = [];
+  List<TimelineWidget> listTimeLineVideos = [];
 
   @override
   Widget build(BuildContext context) {
     buildTimelineVideos();
-    print(listTimeLineVideos);
     return SafeArea(
       child: Scaffold(
         appBar: CustomAppBar(
@@ -42,11 +42,17 @@ class _TimelinePageState extends State<TimelinePage> {
               height: 16,
             ),
             Expanded(
-                child: Timeline(
-              children: listTimeLineVideos,
-              indicatorColor: Colors.orange[300]!,
-              indicatorSize: 40,
-            )),
+                child: listTimeLineVideos.isNotEmpty
+                    ? const ListEmptyContainer(
+                        emptyText:
+                            'YOUR VIDEO TIMELINE HISTORY IS EMPTY!\nWHEN YOU RECORD VIDEOS USING LAWIMMUNITY CAMERA, THEY WILL APPEAR HERE',
+                        icon: Icons.delete_outline_outlined,
+                      )
+                    : Timeline(
+                        children: listTimeLineVideos,
+                        indicatorColor: Colors.orange[300]!,
+                        indicatorSize: 40,
+                      )),
             const SizedBox(
               height: 1,
             ),

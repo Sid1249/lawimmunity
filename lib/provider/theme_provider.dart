@@ -6,7 +6,7 @@ class _AppColors {
   static const Color appTransparent = Colors.transparent;
   static const Color appWhite = Color(0xffffffff);
   static const Color appBlack = Color(0xff000000);
-  static const Color appPrimary = Color(0xffEB9404);
+  static const Color appPrimary = Color(0xffF3A72E);
   static const Color appError = Color(0xffFF7D88);
   static const Color appTertiary = Color(0xffF3F5ED);
 
@@ -14,7 +14,7 @@ class _AppColors {
 
   static const Color appButtonDisabled = Color(0x88eb9404);
 
-  static const Color appButtonGradientLeft = Color(0xffAE21E3);
+  static const Color appButtonGradientLeft = Color(0xff293040);
   static const Color appButtonGradientRight = Color(0xff7800ED);
 
   static const Color lightModeBackgroundGradientTop = Color(0xffF4F4F4);
@@ -28,7 +28,7 @@ class ThemeProvider extends ChangeNotifier {
 
   bool get isDarkMode {
     if (themeMode == ThemeMode.system) {
-      final brightness = SchedulerBinding.instance?.window.platformBrightness;
+      final brightness = SchedulerBinding.instance.window.platformBrightness;
       return brightness == Brightness.dark;
     } else {
       return themeMode == ThemeMode.dark;

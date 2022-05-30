@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TimelineWidget extends StatelessWidget {
-  TimelineWidget({Key? key}) : super(key: key);
+  const TimelineWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,24 +24,24 @@ class TimelineWidget extends StatelessWidget {
                 ),
                 color: Color(0xffc4c4c4),
               ),
-              child: Icon(Icons.play_circle_fill,color: Theme.of(context).colorScheme.primary,),
+              child: Icon(Icons.play_circle_fill,color: Theme.of(context).colorScheme.onPrimary,),
             ),
             Container(
               width: MediaQuery.of(context).size.width / 1.5 / 2,
               height: 40,
               decoration: const BoxDecoration(
-                  borderRadius: const BorderRadius.only(bottomLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
+                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(8),bottomRight: Radius.circular(8)),
                   color: Color(0xffc4c4c4)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  IconButton(icon: const Icon(Icons.share), onPressed: () {
+                  IconButton(icon: Icon(Icons.share,color: Theme.of(context).colorScheme.onPrimary), onPressed: () {
 
 
 
                   },),
-                  IconButton(icon: const Icon(Icons.delete), onPressed: () {
+                  IconButton(icon: Icon(Icons.delete,color: Theme.of(context).colorScheme.onPrimary,), onPressed: () {
 
 
 

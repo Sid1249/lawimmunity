@@ -24,6 +24,7 @@ dependencies:
   country_code_picker: ^2.0.2
   auto_size_text: ^3.0.0
   fluttertoast: ^8.0.9
+  background_location: ^0.8.1
 
 
 
