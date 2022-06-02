@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:lawimmunity/screens/location_page/location_provider.dart';
+import 'package:lawimmunity/screens/location_page/location_service.dart';
+import 'package:provider/provider.dart';
 
 class LocationHead extends StatefulWidget {
   const LocationHead({Key? key}) : super(key: key);
@@ -11,11 +15,14 @@ class LocationHead extends StatefulWidget {
 }
 
 class _LocationHeadState extends State<LocationHead> {
-  var _switchValue = false;
+
+  GetIt getIt = GetIt.instance;
+  late LocationService locationService;
 
   @override
   void initState() {
     super.initState();
+    locationService = getIt<LocationService>();
   }
 
   @override
@@ -25,10 +32,12 @@ class _LocationHeadState extends State<LocationHead> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Consumer<LocationProvider>(
+  builder: (context, provider, child) {
+  return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7.40),
-        color: _switchValue
+        color: provider.isLocationShared
             ? Theme.of(context).colorScheme.onSecondaryContainer
             : Theme.of(context).colorScheme.error,
       ),
@@ -41,7 +50,7 @@ class _LocationHeadState extends State<LocationHead> {
           Row(
             children: [
               Text(
-                _switchValue
+                provider.isLocationShared
                     ? 'LOCATION SHARING IS ON'
                     : 'LOCATION SHARING IS OFF',
                 textAlign: TextAlign.center,
@@ -58,19 +67,23 @@ class _LocationHeadState extends State<LocationHead> {
                     backgroundColor: Colors.black,
                     switchTheme: SwitchThemeData().copyWith(
                         thumbColor: MaterialStateProperty.resolveWith((states) {
-                          return _switchValue ? Theme.of(context).colorScheme.background : Theme.of(context).colorScheme.inversePrimary ;
+                          return provider.isLocationShared ? Theme.of(context).colorScheme.background : Theme.of(context).colorScheme.inversePrimary ;
                     }),
                     trackColor: MaterialStateProperty.resolveWith((states) {
-                      return _switchValue ? Theme.of(context).colorScheme.inversePrimary : Theme.of(context).colorScheme.background ;
+                      return provider.isLocationShared ? Theme.of(context).colorScheme.inversePrimary : Theme.of(context).colorScheme.background ;
                     }),
 
                     )),
                 child: Switch.adaptive(
-                  value: _switchValue,
+                  value: provider.isLocationShared,
                   onChanged: (value) {
-                    setState(() {
-                      _switchValue = value;
-                    });
+                    provider.isLocationShared = value;
+                    if(value){
+                      locationService.startLocationService(context);
+                    }else{
+                      locationService.stopLocationService(context);
+
+                    }
                   },
                 ),
               ),
@@ -79,7 +92,7 @@ class _LocationHeadState extends State<LocationHead> {
           SizedBox(
             width: MediaQuery.of(context).size.width / 1.4,
             child: Text(
-              _switchValue
+              provider.isLocationShared
                   ? 'WE ARE CONSTANTLY UPDATING YOUR LIVE LOCATION'
                   : 'YOU ARE NOT SYNCING YOUR LIVE LOCATION WITH US',
               style: const TextStyle(
@@ -93,5 +106,7 @@ class _LocationHeadState extends State<LocationHead> {
         ],
       ),
     );
+  },
+);
   }
 }

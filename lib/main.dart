@@ -1,18 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lawimmunity/provider/Key_value_store_provider.dart';
-import 'package:lawimmunity/screens/auth/login_signup_page.dart';
 import 'package:lawimmunity/screens/home_redirect_page.dart';
+import 'package:lawimmunity/screens/location_page/location_provider.dart';
+import 'package:lawimmunity/services/service_initializer.dart';
 import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 import 'provider/theme_provider.dart';
 
 Future<void> main() async {
 
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
+  await initServices();
   runApp(MyApp());
 }
 
@@ -31,6 +29,8 @@ class MyApp extends StatelessWidget {
       providers: [
         // Provider<WooClient>(create: (_) => WooClientImpl()),
         Provider<KeyValueStore>(create: (context) => KeyValueStoreImpl()),
+        ChangeNotifierProvider<LocationProvider>(create: (ctx) => LocationProvider()),
+
         // ChangeNotifierProvider<AuthenticationService>(
         //     create: (ctx) => AuthenticationServiceImpl(
         //       Provider.of<WooClient>(ctx, listen: false),

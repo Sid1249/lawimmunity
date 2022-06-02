@@ -48,6 +48,7 @@ class RaisedGradientButton extends StatelessWidget {
           padding: EdgeInsets.all(15.0),
           child: Text(
             label,
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20,color: Theme.of(context).colorScheme.secondary),
           ),
         ),

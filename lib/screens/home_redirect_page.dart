@@ -65,7 +65,8 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
     }else{
 
       setState(() {
-        mainPage = LoginSignupPage();
+        // mainPage = LoginSignupPage();
+        mainPage = DashboardPage();
 
       });
 
