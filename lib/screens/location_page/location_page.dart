@@ -5,7 +5,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:lawimmunity/screens/location_page/location_model.dart';
 import 'package:lawimmunity/screens/location_page/location_provider.dart';
 import 'package:lawimmunity/widgets/custom_app_bar.dart';
-import 'package:lawimmunity/widgets/custom_raised_button.dart';
 import 'package:lawimmunity/widgets/flutter_map_widget.dart';
 import 'package:lawimmunity/widgets/location_head_widget.dart';
 import 'package:lawimmunity/widgets/text_component.dart';
