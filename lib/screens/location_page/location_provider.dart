@@ -1,11 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:lawimmunity/widgets/flutter_map_widget.dart';
 
-class LocationProvider extends ChangeNotifier{
-
+class LocationProvider extends ChangeNotifier {
   bool _isLocationShared = false;
 
   DateTime _updateTime = DateTime.now();
@@ -14,7 +13,7 @@ class LocationProvider extends ChangeNotifier{
 
   bool get isLocationShared => _isLocationShared;
 
-  MapController _mapController = MapController();
+  MapWrapperController mapWrapperController = MapWrapperController();
 
   set isLocationShared(bool value) {
     _isLocationShared = value;
@@ -27,18 +26,15 @@ class LocationProvider extends ChangeNotifier{
     _updateTime = value;
   }
 
-  Location get currentLocation => _currentLocation;
+  Location getCurrentLocation() {
+    return _currentLocation;
+  }
 
   set currentLocation(Location value) {
     _currentLocation = value;
     _updateTime = DateTime.now();
-    mapController.move(LatLng(value.coords.latitude,value.coords.longitude),16);
+    mapWrapperController.controller!
+        .move(LatLng(value.coords.latitude, value.coords.longitude), 16);
     notifyListeners();
-  }
-
-  MapController get mapController => _mapController;
-
-  set mapController(MapController value) {
-    _mapController = value;
   }
 }

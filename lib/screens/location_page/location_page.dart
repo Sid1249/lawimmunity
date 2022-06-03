@@ -6,6 +6,7 @@ import 'package:lawimmunity/screens/location_page/location_model.dart';
 import 'package:lawimmunity/screens/location_page/location_provider.dart';
 import 'package:lawimmunity/widgets/custom_app_bar.dart';
 import 'package:lawimmunity/widgets/flutter_map_widget.dart';
+import 'package:lawimmunity/widgets/list_empty_container.dart';
 import 'package:lawimmunity/widgets/location_head_widget.dart';
 import 'package:lawimmunity/widgets/text_component.dart';
 import 'package:provider/provider.dart';
@@ -28,12 +29,10 @@ class _LocationPageState extends State<LocationPage> {
     LocationModel("2.882605, 2.532138", "none for now", "2nd later"),
     LocationModel("2.882605, 2.532138", "none for now", "3rd later")
   ];
-  MapController? _mapCtl;
 
   @override
   void initState() {
     super.initState();
-    _mapCtl = MapController();
   }
 
   @override
@@ -71,7 +70,7 @@ class _LocationPageState extends State<LocationPage> {
                               )),
                           TextSpan(
                               text:
-                                  '${Provider.of<LocationProvider>(context, listen: true).currentLocation.coords.latitude},${Provider.of<LocationProvider>(context, listen: true).currentLocation.coords.longitude}',
+                                  '${Provider.of<LocationProvider>(context, listen: true).getCurrentLocation().coords.latitude},${Provider.of<LocationProvider>(context, listen: true).getCurrentLocation().coords.longitude}',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
@@ -101,35 +100,41 @@ class _LocationPageState extends State<LocationPage> {
                       },
                       children: [
                         Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(4.85),
-                              border: Border.all(
-                                color: Colors.orange,
-                                width: 3,
-                              ),
-                              color: Colors.white,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4.85),
+                            border: Border.all(
+                              color: Colors.orange,
+                              width: 3,
                             ),
-                            height: MediaQuery.of(context).size.height / 3,
-                            width: MediaQuery.of(context).size.height - 200,
-                            child: FlutterMapWidget(
-                              latitude: Provider.of<LocationProvider>(context,
-                                      listen: true)
-                                  .currentLocation
-                                  .coords
-                                  .latitude,
-                              longitude: Provider.of<LocationProvider>(context,
-                                      listen: true)
-                                  .currentLocation
-                                  .coords
-                                  .longitude,
-                            ))
+                            color: Colors.white,
+                          ),
+                          height: MediaQuery.of(context).size.height / 3,
+                          width: MediaQuery.of(context).size.height - 200,
+                          child: FlutterMapWrapper(
+                            wrapperController: provider.mapWrapperController,
+                            options: MapOptions(
+                                crs: Epsg3857(),
+                                zoom: 15.0,
+                                maxZoom: 17.0,
+                                minZoom: 1.0),
+                          ),
+                        ),
                       ],
                     );
                   },
                 ),
-              const SizedBox(
-                height: 2,
-              ),
+              Spacer(),
+              if (!Provider.of<LocationProvider>(context, listen: true)
+                  .isLocationShared)
+                Center(
+                    child: ListEmptyContainer(
+                  icon: Icons.location_history,
+                  emptyText:
+                      'Location shareing is off so your live location is not being synced with LawImmunity',
+                )),
+              // const SizedBox(
+              //   height: 2,
+              // ),
               Spacer(),
               // Container(
               //   width: MediaQuery.of(context).size.width,

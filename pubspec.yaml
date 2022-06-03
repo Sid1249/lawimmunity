@@ -28,6 +28,7 @@ dependencies:
   get_it: ^7.2.0
   flutter_background_geolocation: ^4.6.3
   flutter_map: ^0.14.0
+  agora_rtc_engine: ^5.2.0
 
 
 dev_dependencies:

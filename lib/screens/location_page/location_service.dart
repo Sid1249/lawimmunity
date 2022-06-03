@@ -5,7 +5,7 @@ import 'package:lawimmunity/screens/location_page/location_provider.dart';
 import 'package:provider/provider.dart';
 
 class LocationService {
-  var locationProvider;
+  LocationProvider? locationProvider;
 
   startLocationService(BuildContext context) async {
     locationProvider = Provider.of<LocationProvider>(context, listen: false);
@@ -55,7 +55,7 @@ class LocationService {
   void _onLocation(bg.Location location) {
     print('[location] - $location');
 
-    locationProvider.currentLocation = location;
+    locationProvider!.currentLocation  = location;
     String odometerKM = (location.odometer / 1000.0).toStringAsFixed(1);
   }
 
