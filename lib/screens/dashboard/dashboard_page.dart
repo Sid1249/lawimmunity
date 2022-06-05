@@ -1,22 +1,38 @@
+import 'dart:convert';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get_it/get_it.dart';
 import 'package:lawimmunity/screens/location_page/location_page.dart';
 import 'package:lawimmunity/screens/nominess_page/nominees_page.dart';
 import 'package:lawimmunity/screens/settings_page/settings_page.dart';
 import 'package:lawimmunity/screens/timeline_page/timeline_page.dart';
+import 'package:lawimmunity/screens/video_call_page/recording_services.dart';
+import 'package:lawimmunity/services/firebase_services.dart';
+import 'package:lawimmunity/services/permission_service.dart';
 import 'package:lawimmunity/widgets/appbar.dart';
 import 'package:lawimmunity/widgets/custom_raised_button.dart';
 import 'package:lawimmunity/widgets/location_head_widget.dart';
 import 'package:lawimmunity/screens/dashboard/single_dashboadrd_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends StatelessWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  DashboardPage({Key? key}) : super(key: key);
+
+  late SharedPreferences _keyValueStore;
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final double itemHeight = (size.height) / 2;
     final double itemWidth = size.width / 2;
+
+    GetIt getIt = GetIt.instance;
+
+    _keyValueStore = getIt<SharedPreferences>();
+    var userName = _keyValueStore.getString('user_name');
 
     return SafeArea(
       child: Scaffold(
@@ -72,17 +88,31 @@ class DashboardPage extends StatelessWidget {
                 ],
               ),
               const Spacer(),
-              RaisedGradientButton("Record Video", onPressed: () {}),
+              RaisedGradientButton('Record Video', onPressed: () {
+                PermissionService().RequestPermissions().then((value) {
+                  if (value == true) {
+                    RecordingServices().createToken(context);
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: 'Permission denied',
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
+                        fontSize: 16.0);
+                  }
+                });
+              }),
               TextButton(
                   onPressed: () {},
                   child: const AutoSizeText(
-                    "SEND SOS TO NOMINIES WITH LOCATTION",
+                    'SEND SOS TO NOMINIES WITH LOCATTION',
                     maxLines: 1,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
-                      fontFamily: "Roboto",
+                      fontFamily: 'Roboto',
                       fontWeight: FontWeight.w500,
                       letterSpacing: 0.90,
                     ),

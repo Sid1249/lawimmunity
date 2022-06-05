@@ -11,39 +11,50 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_localizations: # Add this line
+  flutter_localizations:
     sdk: flutter
-  cupertino_icons: ^1.0.2
-  google_fonts: ^2.3.2
-  widgetbook_annotation: ^2.0.1
+  google_fonts: ^3.0.1
+  widgetbook_annotation: ^2.1.0
   intl: ^0.17.0
-  shared_preferences: ^2.0.13
-  provider: ^6.0.2
-  cloud_firestore: ^3.1.15
-  firebase_auth: ^3.3.18
+  shared_preferences: ^2.0.15
+  provider: ^6.0.3
+  firebase_database: ^9.0.15
+  firebase_auth: ^3.3.19
   country_code_picker: ^2.0.2
   auto_size_text: ^3.0.0
   fluttertoast: ^8.0.9
   timeago: ^3.2.2
   get_it: ^7.2.0
+  http: ^0.13.4
   flutter_background_geolocation: ^4.6.3
   flutter_map: ^0.14.0
   agora_rtc_engine: ^5.2.0
+  enx_flutter_plugin: ^2.0.7
+  permission_handler: ^9.2.0
 
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^1.0.0
-  widgetbook: ^2.1.0
-  widgetbook_generator: ^2.0.1
+  flutter_lints: ^2.0.1
+  widgetbook: ^2.3.0
+  widgetbook_generator: ^2.2.0
 
 
 flutter:
   uses-material-design: true
   generate: true
 
+  assets:
+    - assets/disconnect.png
+    - assets/mute_audio.png
+    - assets/unmute_audio.png
+    - assets/unmute_video.png
+    - assets/camera_switch.png
+    - assets/mute_video.png
+    - assets/mute_speaker.png
+    - assets/unmute_speaker.png
 
   fonts:
     - family: Roboto
