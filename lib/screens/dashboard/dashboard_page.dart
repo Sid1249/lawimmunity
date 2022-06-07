@@ -12,6 +12,7 @@ import 'package:lawimmunity/screens/timeline_page/timeline_page.dart';
 import 'package:lawimmunity/screens/video_call_page/recording_services.dart';
 import 'package:lawimmunity/services/firebase_services.dart';
 import 'package:lawimmunity/services/permission_service.dart';
+import 'package:lawimmunity/services/shared_pref_services.dart';
 import 'package:lawimmunity/widgets/appbar.dart';
 import 'package:lawimmunity/widgets/custom_raised_button.dart';
 import 'package:lawimmunity/widgets/location_head_widget.dart';
@@ -28,6 +29,8 @@ class DashboardPage extends StatelessWidget {
     var size = MediaQuery.of(context).size;
     final double itemHeight = (size.height) / 2;
     final double itemWidth = size.width / 2;
+
+    SharedPrefServices().setUserName('Siddhant Parashar');
 
     GetIt getIt = GetIt.instance;
 
@@ -91,7 +94,7 @@ class DashboardPage extends StatelessWidget {
               RaisedGradientButton('Record Video', onPressed: () {
                 PermissionService().RequestPermissions().then((value) {
                   if (value == true) {
-                    RecordingServices().createToken(context);
+                    RecordingServices().createRoom(context);
                   } else {
                     Fluttertoast.showToast(
                         msg: 'Permission denied',

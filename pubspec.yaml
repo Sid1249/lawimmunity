@@ -29,9 +29,10 @@ dependencies:
   flutter_background_geolocation: ^4.6.3
   flutter_map: ^0.14.0
   agora_rtc_engine: ^5.2.0
-  enx_flutter_plugin: ^2.0.7
+  enx_flutter_plugin: ^2.0.8
   permission_handler: ^9.2.0
-
+  firebase_messaging: ^11.4.1
+  flutter_local_notifications: ^9.6.0
 
 
 dev_dependencies:

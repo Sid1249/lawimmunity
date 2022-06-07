@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>1016256532710-3tgtbcdskoqqer098vo2oofkbshf4n7m.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.1016256532710-3tgtbcdskoqqer098vo2oofkbshf4n7m</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>1016256532710-627g2kjkat56aht7j0nc19aofl9qlbpg.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBrqz_mx3lIosQSEYKEshZqU-rbudAr1BQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>1016256532710</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.future.apps.lawimmunity.lawimmunity</string>
+	<key>PROJECT_ID</key>
+	<string>lawimmunity-2aa26</string>
+	<key>STORAGE_BUCKET</key>
+	<string>lawimmunity-2aa26.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:1016256532710:ios:9873bdb7af2df8ad472b27</string>
+	<key>DATABASE_URL</key>
+	<string>https://lawimmunity-2aa26-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>

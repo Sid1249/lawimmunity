@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lawimmunity/helpers/toast.dart';
+import 'package:lawimmunity/main.dart';
 import 'package:lawimmunity/screens/home_redirect_page.dart';
 import 'package:lawimmunity/widgets/app_logo.dart';
 import 'package:lawimmunity/widgets/appbar.dart';

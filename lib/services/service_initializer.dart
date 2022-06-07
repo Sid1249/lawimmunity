@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 Future<void> initServices() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   GetIt getIt = GetIt.instance;
   getIt.registerSingleton(await SharedPreferences.getInstance());
   getIt.registerSingleton(LocationService());

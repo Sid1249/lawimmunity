@@ -5,10 +5,13 @@ import 'dart:async';
 import 'package:enx_flutter_plugin/enx_player_widget.dart';
 
 import 'package:enx_flutter_plugin/enx_flutter_plugin.dart';
+import 'package:lawimmunity/services/firebase_services.dart';
 
 class MyConfApp extends StatefulWidget {
   MyConfApp({required this.token});
+
   final String? token;
+
   @override
   Conference createState() => Conference();
 }
@@ -45,9 +48,9 @@ class Conference extends State<MyConfApp> {
       'videoSize': map2
     };
 
-    Map<String,dynamic> roomInfo = {
+    Map<String, dynamic> roomInfo = {
       'name': 'Topic or Room Title',
-      'owner_ref': 'xyz',
+      'owner_ref': FirebaseServices().getCurrentUid(),
       'settings': {
         'live_recording': {
           'auto_recording': true,
@@ -57,17 +60,14 @@ class Conference extends State<MyConfApp> {
         'scheduled': true,
         'adhoc': false,
         'duration': 30,
+        'single_file_recording':true,
         'moderators': '1',
-        'participants': '2',
+        'participants': '3',
         'auto_recording': true,
         'quality': 'SD'
       },
-      'sip': {
-        'enabled': false
-      },
-      'data': {
-        'custom_key': ''
-      }
+      'sip': {'enabled': false},
+      'data': {'custom_key': ''}
     };
     print('here 2');
     await EnxRtc.joinRoom(widget.token!, map1, roomInfo, []);
@@ -98,6 +98,11 @@ class Conference extends State<MyConfApp> {
         streamId = map['streamId'];
       });
       EnxRtc.subscribe(streamId!);
+
+
+
+
+
     };
     print('here 7');
     EnxRtc.onRoomError = (Map<dynamic, dynamic> map) {
@@ -118,7 +123,7 @@ class Conference extends State<MyConfApp> {
         print('here 10');
         setState(() {
           for (final item in items) {
-            if(!_remoteUsers.contains(item.streamId)){
+            if (!_remoteUsers.contains(item.streamId)) {
               print('_remoteUsers ' + map.toString());
               _remoteUsers.add(item.streamId);
             }
@@ -153,6 +158,7 @@ class Conference extends State<MyConfApp> {
     EnxRtc.onRoomDisConnected = (Map<dynamic, dynamic> map) {
       setState(() {
         print('onRoomDisConnected' + jsonEncode(map));
+        EnxRtc.stopRecord(); // To stop recording
         Navigator.pop(context, '/Conference');
       });
     };
@@ -170,6 +176,9 @@ class Conference extends State<MyConfApp> {
     print('here 16');
     EnxRtc.onVideoEvent = (Map<dynamic, dynamic> map) {
       print('onVideoEvent' + jsonEncode(map));
+      EnxRtc.startRecord(); // To start recording
+
+
       setState(() {
         if (map['msg'].toString() == 'Video Off') {
           isVideoMuted = true;
@@ -179,10 +188,8 @@ class Conference extends State<MyConfApp> {
       });
     };
     print('here 17');
-    EnxRtc.onACKStartLiveRecording = (Map<dynamic, dynamic> map){
-
+    EnxRtc.onACKStartLiveRecording = (Map<dynamic, dynamic> map) {
       print('onLiveRecordingEvent' + jsonEncode(map));
-
     };
   }
 
@@ -256,25 +263,25 @@ class Conference extends State<MyConfApp> {
   int remoteView = -1;
   List<dynamic>? deviceList;
 
-  Widget _viewRows() {
-    return Column(
-      children: <Widget>[
-        for (final widget in _renderWidget)
-          Expanded(
-            child: Container(
-              child: widget,
-            ),
-          )
-      ],
-    );
-  }
-
-  Iterable<Widget> get _renderWidget sync* {
-    for (final streamId in _remoteUsers) {
-      double width = MediaQuery.of(context).size.width;
-      yield EnxPlayerWidget(streamId, local: false,width:width.toInt(),height:380);
-    }
-  }
+  // Widget _viewRows() {
+  //   return Column(
+  //     children: <Widget>[
+  //       for (final widget in _renderWidget)
+  //         Expanded(
+  //           child: Container(
+  //             child: widget,
+  //           ),
+  //         )
+  //     ],
+  //   );
+  // }
+  //
+  // Iterable<Widget> get _renderWidget sync* {
+  //   for (final streamId in _remoteUsers) {
+  //     double width = MediaQuery.of(context).size.width;
+  //     yield EnxPlayerWidget(streamId, local: false,width:width.toInt(),height:380);
+  //   }
+  // }
 
   // Widget _viewRows() {
   //   return  Expanded(
@@ -291,7 +298,6 @@ class Conference extends State<MyConfApp> {
 
   final _remoteUsers = <int>[];
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -302,16 +308,6 @@ class Conference extends State<MyConfApp> {
         color: Colors.black,
         child: Column(
           children: [
-            Container(
-                alignment: Alignment.topRight,
-                height: 90,
-                width: MediaQuery.of(context).size.width,
-                child: Container(
-                  color: Colors.black,
-                  height: 100,
-                  width: 100,
-                  child: EnxPlayerWidget(0, local: true,width: 100, height: 100),
-                )),
             Stack(
               children: <Widget>[
                 Card(
@@ -323,98 +319,92 @@ class Conference extends State<MyConfApp> {
                     child: Column(
                       children: <Widget>[
                         Expanded(
-                          child: Container(
-                              child: _viewRows()
+                          child: EnxPlayerWidget(
+                            0,
+                            local: false,
+                          ),
+                        ),
+                        Container(
+                          color: Colors.white,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width / 6,
+                                child: MaterialButton(
+                                  child: isAudioMuted
+                                      ? Image.asset(
+                                          'assets/mute_audio.png',
+                                          fit: BoxFit.cover,
+                                          height: 30,
+                                          width: 30,
+                                        )
+                                      : Image.asset(
+                                          'assets/unmute_audio.png',
+                                          fit: BoxFit.cover,
+                                          height: 30,
+                                          width: 30,
+                                        ),
+                                  onPressed: _toggleAudio,
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 6,
+                                child: MaterialButton(
+                                  child: Image.asset(
+                                    'assets/camera_switch.png',
+                                    fit: BoxFit.cover,
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                                  onPressed: _toggleCamera,
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 6,
+                                child: MaterialButton(
+                                  child: isVideoMuted
+                                      ? Image.asset(
+                                          'assets/mute_video.png',
+                                          fit: BoxFit.cover,
+                                          height: 30,
+                                          width: 30,
+                                        )
+                                      : Image.asset(
+                                          'assets/unmute_video.png',
+                                          fit: BoxFit.cover,
+                                          height: 30,
+                                          width: 30,
+                                        ),
+                                  onPressed: _toggleVideo,
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 6,
+                                child: MaterialButton(
+                                  child: Image.asset(
+                                    'assets/unmute_speaker.png',
+                                    fit: BoxFit.cover,
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                                  onPressed: _toggleSpeaker,
+                                ),
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 6,
+                                child: MaterialButton(
+                                  child: Image.asset(
+                                    'assets/disconnect.png',
+                                    fit: BoxFit.cover,
+                                    height: 30,
+                                    width: 30,
+                                  ),
+                                  onPressed: _disconnectRoom,
+                                ),
+                              ),
+                            ],
                           ),
                         )
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 30,
-                  left: 20,
-                  right: 20,
-                  child: Container(
-                    color: Colors.white,
-                    // height: 100,
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width / 6,
-                          child: MaterialButton(
-                            child: isAudioMuted
-                                ? Image.asset(
-                              'assets/mute_audio.png',
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
-                            )
-                                : Image.asset(
-                              'assets/unmute_audio.png',
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
-                            ),
-                            onPressed: _toggleAudio,
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 6,
-                          child: MaterialButton(
-                            child: Image.asset(
-                              'assets/camera_switch.png',
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
-                            ),
-                            onPressed: _toggleCamera,
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 6,
-                          child: MaterialButton(
-                            child: isVideoMuted
-                                ? Image.asset(
-                              'assets/mute_video.png',
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
-                            )
-                                : Image.asset(
-                              'assets/unmute_video.png',
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
-                            ),
-                            onPressed: _toggleVideo,
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 6,
-                          child: MaterialButton(
-                            child: Image.asset(
-                              'assets/unmute_speaker.png',
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
-                            ),
-                            onPressed: _toggleSpeaker,
-                          ),
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 6,
-                          child: MaterialButton(
-                            child: Image.asset(
-                              'assets/disconnect.png',
-                              fit: BoxFit.cover,
-                              height: 30,
-                              width: 30,
-                            ),
-                            onPressed: _disconnectRoom,
-                          ),
-                        ),
                       ],
                     ),
                   ),

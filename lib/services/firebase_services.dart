@@ -19,6 +19,7 @@ class FirebaseServices {
     if (secretSnapshot.snapshot.exists) {
       final secretNode = json.decode(json.encode(secretSnapshot.snapshot.value))
           as Map<String, dynamic>;
+      print_debug(secretNode.toString());
       return secretNode;
     } else {
       return null;
@@ -36,7 +37,10 @@ class FirebaseServices {
 
 
   String? generateRoomKeyManual(String roomKey) {
+    print("roomkey = ${roomKey}");
     String? currentUid = getCurrentUid();
+    print("currUID = ${currentUid}");
+
     if(currentUid!= null) {
       FirebaseDatabase database = FirebaseDatabase.instance;
       DatabaseReference myRef = database.ref('users').child(currentUid).child('videos');
