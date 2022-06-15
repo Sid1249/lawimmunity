@@ -7,7 +7,6 @@ class PermissionService {
     bool allGranted = false;
     Map<Permission, PermissionStatus> result = await [
       Permission.microphone,
-      Permission.storage,
       Permission.camera,
       Permission.location
     ].request();

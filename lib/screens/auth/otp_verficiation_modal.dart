@@ -243,7 +243,7 @@ class OtpLoginModal {
       };
 
       PhoneVerificationFailed verificationFailed = (FirebaseAuthException authException) {
-        showToast(authException.message!);
+        showToast("exception: "+authException.message!);
       };
       PhoneCodeSent codeSent = (String? verificationId, [int? forceResendingToken]) async {
         showToast('Please check your phone for the verification code.');

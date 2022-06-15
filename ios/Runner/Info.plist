@@ -2,6 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>io.flutter.embedded_views_preview</key>
+	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Enable Microphone access so that you can record audio in realtime and it can be saved in LawImmunity</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Enable Camera access so that you can record video in realtime and it can be saved in LawImmunity</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.transistorsoft.customtask</string>
+		<string>com.transistorsoft.fetch</string>
+	</array>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -24,6 +39,18 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow LawImmunity to access your location in background to let your nominess know your updated location at all times, you can stop sharing your location anytime</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow Location access to LawImmunity so it can sync your preciese location with your nominnees</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Allow LawImmunity to detect motion changes so it can stop fetching your location when you are not moving thus saving your battery</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>location</string>
+		<string>processing</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -43,7 +70,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
 </dict>
 </plist>

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lawimmunity/main.dart';
 import 'package:lawimmunity/screens/settings_page/delete_data_modal.dart';
 import 'package:lawimmunity/widgets/custom_app_bar.dart';
 
@@ -23,6 +25,8 @@ class _SettingsPageState extends State<SettingsPage> {
           title: 'Settings',
           actionWidgets: [IconButton(onPressed: (){
 
+            FirebaseAuth.instance.signOut();
+            Navigator.popUntil(context, ModalRoute.withName('/redirect'));
 
 
           }, icon: const Icon(Icons.logout))],

@@ -1,0 +1,27 @@
+{
+  "name": "lawimmunity",
+  "version": "1.0.0",
+  "description": "LawImmunnity Application to record live videos and share ewith freinds and family",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sid1249/lawimmunity.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sid1249/lawimmunity/issues"
+  },
+  "homepage": "https://github.com/Sid1249/lawimmunity#readme",
+  "dependencies": {
+    "json5": "^2.2.1"
+  }
+}

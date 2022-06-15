@@ -27,13 +27,13 @@ dependencies:
   get_it: ^7.2.0
   http: ^0.13.4
   flutter_background_geolocation: ^4.6.3
+  background_geolocation_firebase: ^1.0.0
   flutter_map: ^0.14.0
-  agora_rtc_engine: ^5.2.0
   enx_flutter_plugin: ^2.0.8
   permission_handler: ^9.2.0
   firebase_messaging: ^11.4.1
   flutter_local_notifications: ^9.6.0
-
+  cloud_functions: ^3.2.16
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,8 @@
+import 'dart:isolate';
+import 'dart:ui';
+
+import 'package:background_geolocation_firebase/background_geolocation_firebase.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
@@ -8,33 +13,46 @@ import 'package:lawimmunity/firebase_options.dart';
 import 'package:lawimmunity/provider/Key_value_store_provider.dart';
 import 'package:lawimmunity/screens/auth/login_signup_page.dart';
 import 'package:lawimmunity/screens/dashboard/dashboard_page.dart';
-import 'package:lawimmunity/screens/home_redirect_page.dart';
-import 'package:lawimmunity/screens/location_page/location_provider.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
+import 'package:lawimmunity/screens/location_page/provider/location_provider.dart';
 import 'package:lawimmunity/services/service_initializer.dart';
 import 'package:lawimmunity/widgets/appbar.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-
 import 'provider/theme_provider.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  if (Firebase.apps.isNotEmpty) {
+    Firebase.app();
+  } else {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  }
 
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final port = IsolateNameServer.lookupPortByName(backgroundMessageIsolateName);
+  port?.send(message);
+
   print('Handling a background message ${message.messageId}');
-
-  FirebaseDatabase.instance.ref().child('teemp').push().child('testing').set("hello");
-
 }
 
 late AndroidNotificationChannel channel;
 
 late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
-Future<void> main() async {
+final ReceivePort backgroundMessageport = ReceivePort();
+const String backgroundMessageIsolateName = 'fcm_background_msg_isolate';
 
+void backgroundMessagePortHandler(message) {
+  final dynamic data = message.data;
+
+}
+
+Future<void> main() async {
   await initServices();
+
+
 
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -43,7 +61,9 @@ Future<void> main() async {
     channel = const AndroidNotificationChannel(
       'lawimmunity_high_importance_channel', // id
       'High Importance Notifications From LawImmunity', // title
-      description: 'This channel is used for important notifications from LawImmunity.', // description
+      description:
+          'This channel is used for important notifications from LawImmunity.',
+      // description
       importance: Importance.high,
     );
 
@@ -55,7 +75,7 @@ Future<void> main() async {
     /// default FCM channel to enable heads up notifications.
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
+            AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
     /// Update the iOS foreground notification presentation options to allow
@@ -67,7 +87,14 @@ Future<void> main() async {
       sound: true,
     );
   }
+  IsolateNameServer.registerPortWithName(
+    backgroundMessageport.sendPort,
+    backgroundMessageIsolateName,
+  );
 
+  backgroundMessageport.listen(backgroundMessagePortHandler);
+  FirebaseAuth.instance.useAuthEmulator('localhost',9099);
+  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   runApp(MyApp());
 }
 
@@ -81,25 +108,27 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<KeyValueStore>(create: (context) => KeyValueStoreImpl()),
-        ChangeNotifierProvider<LocationProvider>(create: (ctx) => LocationProvider()),
+        ChangeNotifierProvider<LocationProvider>(
+            create: (ctx) => LocationProvider()),
       ],
       child: MaterialApp(
-        title: 'LawImmunity',
-        // routeInformationParser: _appRouter.defaultRouteParser(),
-        // routerDelegate: _appRouter.delegate(),
-        themeMode: ThemeMode.light,
-        debugShowCheckedModeBanner: false,
-        theme: myThemes.buildLightTheme(),
-        darkTheme: myThemes.buildDarkTheme(),
-        home: const HomeRedirectPage()
-        // localizationsDelegates: AppLocalizations.localizationsDelegates,
-        // supportedLocales: AppLocalizations.supportedLocales,
-      ),
+          title: 'LawImmunity',
+          // routeInformationParser: _appRouter.defaultRouteParser(),
+          // routerDelegate: _appRouter.delegate(),
+          themeMode: ThemeMode.light,
+          debugShowCheckedModeBanner: false,
+          theme: myThemes.buildLightTheme(),
+          darkTheme: myThemes.buildDarkTheme(),
+          home: const HomeRedirectPage(),
+          routes:{
+            '/redirect' : (context) => const HomeRedirectPage(),
+          } ,
+          // localizationsDelegates: AppLocalizations.localizationsDelegates,
+          // supportedLocales: AppLocalizations.supportedLocales,
+          ),
     );
   }
 }
-
-
 
 class HomeRedirectPage extends StatefulWidget {
   const HomeRedirectPage({Key? key}) : super(key: key);
@@ -117,7 +146,10 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
   void initState() {
     super.initState();
     isUserAuthenticated();
-
+    initPlatformState();
+    FirebaseMessaging.instance.getToken().then((value) {
+      print('token = $value');
+    });
 
     FirebaseMessaging.instance
         .getInitialMessage()
@@ -144,7 +176,7 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
             android: AndroidNotificationDetails(
               channel.id,
               channel.name,
-              channelDescription:channel.description,
+              channelDescription: channel.description,
               // TODO add a proper drawable resource to android, for now using
               //      one that already exists in example app.
               icon: 'launch_background',
@@ -156,7 +188,6 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
-
 
       //Todo: navigate to correct screen
 
@@ -179,42 +210,66 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
   }
 
   void isUserAuthenticated() {
-
-
     mainPage = Scaffold(
       appBar: LawImmunityAppBar(),
       backgroundColor: Colors.white,
       body: SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                "Loading..",
-                style: GoogleFonts.baskervville(
-                    fontSize: 22, color: Colors.black, fontWeight: FontWeight.w300),
-              ),
-              SizedBox(height: 5,),
-              Center(child: CircularProgressIndicator())
-            ],
-          )),
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Loading..',
+            style: GoogleFonts.baskervville(
+                fontSize: 22, color: Colors.black, fontWeight: FontWeight.w300),
+          ),
+          SizedBox(
+            height: 5,
+          ),
+          Center(child: CircularProgressIndicator())
+        ],
+      )),
     );
 
-
-    if(FirebaseAuth.instance.currentUser != null){
-
+    if (FirebaseAuth.instance.currentUser != null) {
       setState(() {
         mainPage = DashboardPage();
       });
-
-    }else{
-
+    } else {
       setState(() {
         mainPage = LoginSignupPage();
       });
-
     }
-
   }
 
+  Future<void> initPlatformState() async {
+
+    // 1.  First configure the Firebase Adapter.
+    BackgroundGeolocationFirebase.configure(BackgroundGeolocationFirebaseConfig(
+        locationsCollection: 'locations',
+        geofencesCollection: 'geofences',
+        updateSingleDocument: false
+    ));
+
+    // 2.  Configure BackgroundGeolocation as usual.
+    bg.BackgroundGeolocation.onLocation((bg.Location location) {
+      print('[location] $location');
+    });
+
+    bg.BackgroundGeolocation.ready(bg.Config(
+        debug: true,
+        logLevel: bg.Config.LOG_LEVEL_VERBOSE,
+        stopOnTerminate: true,
+        startOnBoot: true
+    )).then((bg.State state) {
+      if (!state.enabled) {
+        bg.BackgroundGeolocation.start();
+      }
+    });
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+  }
 }

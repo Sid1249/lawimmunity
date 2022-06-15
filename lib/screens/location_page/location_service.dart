@@ -1,7 +1,7 @@
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:flutter/material.dart';
-import 'package:lawimmunity/screens/location_page/location_provider.dart';
+import 'package:lawimmunity/screens/location_page/provider/location_provider.dart';
 import 'package:provider/provider.dart';
 
 class LocationService {

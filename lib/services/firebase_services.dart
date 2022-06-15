@@ -52,6 +52,18 @@ class FirebaseServices {
     return null;
   }
 
+
+
+
+  void initOnDisconnect(roomId){
+
+    final presenceRef = FirebaseDatabase.instance.ref("ongoing");
+    presenceRef.onDisconnect().set("I disconnected!");
+
+
+
+  }
+
   String? generateRoomKey() {
     FirebaseDatabase database = FirebaseDatabase.instance;
     DatabaseReference myRef = database.ref('users').child('videos');
