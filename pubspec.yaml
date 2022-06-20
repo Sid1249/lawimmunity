@@ -18,7 +18,6 @@ dependencies:
   intl: ^0.17.0
   shared_preferences: ^2.0.15
   provider: ^6.0.3
-  firebase_database: ^9.0.15
   firebase_auth: ^3.3.19
   country_code_picker: ^2.0.2
   auto_size_text: ^3.0.0
@@ -28,12 +27,13 @@ dependencies:
   http: ^0.13.4
   flutter_background_geolocation: ^4.6.3
   background_geolocation_firebase: ^1.0.0
-  flutter_map: ^0.14.0
-  enx_flutter_plugin: ^2.0.8
-  permission_handler: ^9.2.0
+  flutter_map: ^1.0.0
+  enx_flutter_plugin: ^2.1.0
+  permission_handler: ^10.0.0
   firebase_messaging: ^11.4.1
   flutter_local_notifications: ^9.6.0
   cloud_functions: ^3.2.16
+  cloud_firestore: ^3.1.17
 
 dev_dependencies:
   flutter_test:

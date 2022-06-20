@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/Sid1249/lawimmunity#readme",
   "dependencies": {
-    "json5": "^2.2.1"
+    "json5": "^2.2.1",
+    "mysql": "^2.18.1"
   }
 }

@@ -70,8 +70,8 @@ class _LocationPageState extends State<LocationPage> {
                               )),
                           TextSpan(
                               text:
-                                  '${Provider.of<LocationProvider>(context, listen: true).getCurrentLocation().coords.latitude},${Provider.of<LocationProvider>(context, listen: true).getCurrentLocation().coords.longitude}',
-                              style: TextStyle(
+                                  '${Provider.of<LocationProvider>(context, listen: true).getCurrentLocation()!.coords.latitude},${Provider.of<LocationProvider>(context, listen: true).getCurrentLocation()!.coords.longitude}',
+                              style: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
                                 letterSpacing: 2.12,
@@ -111,9 +111,19 @@ class _LocationPageState extends State<LocationPage> {
                           height: MediaQuery.of(context).size.height / 3,
                           width: MediaQuery.of(context).size.height - 200,
                           child: FlutterMapWrapper(
+                            latitude: Provider.of<LocationProvider>(context,
+                                    listen: true)
+                                .getCurrentLocation()!
+                                .coords
+                                .latitude,
+                            longitude: Provider.of<LocationProvider>(context,
+                                    listen: true)
+                                .getCurrentLocation()!
+                                .coords
+                                .latitude,
                             wrapperController: provider.mapWrapperController,
                             options: MapOptions(
-                                crs: Epsg3857(),
+                                crs: const Epsg3857(),
                                 zoom: 15.0,
                                 maxZoom: 17.0,
                                 minZoom: 1.0),
@@ -123,19 +133,19 @@ class _LocationPageState extends State<LocationPage> {
                     );
                   },
                 ),
-              Spacer(),
+              const Spacer(),
               if (!Provider.of<LocationProvider>(context, listen: true)
                   .isLocationShared)
-                Center(
+                const Center(
                     child: ListEmptyContainer(
                   icon: Icons.location_history,
                   emptyText:
-                      'Location shareing is off so your live location is not being synced with LawImmunity',
+                      'Location sharing is off so your live location is not being synced with LawImmunity',
                 )),
               // const SizedBox(
               //   height: 2,
               // ),
-              Spacer(),
+              const Spacer(),
               // Container(
               //   width: MediaQuery.of(context).size.width,
               //   color: const Color(0xffeb9404),

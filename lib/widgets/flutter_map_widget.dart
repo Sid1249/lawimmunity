@@ -71,6 +71,8 @@ class FlutterMapWrapper extends StatefulWidget {
   final List<LayerOptions> nonRotatedLayers;
   final List<Widget> children;
   final List<Widget> nonRotatedChildren;
+  final double? latitude;
+  final double? longitude;
 
   const FlutterMapWrapper({
     Key? key,
@@ -79,6 +81,8 @@ class FlutterMapWrapper extends StatefulWidget {
     this.layers = const [],
     this.nonRotatedLayers = const [],
     this.children = const [],
+    this.latitude,
+    this.longitude,
     this.nonRotatedChildren = const [],
   }) : super(key: key);
 
@@ -115,15 +119,8 @@ class _FlutterMapWrapperState extends State<FlutterMapWrapper> {
             Marker(
               width: 80.0,
               height: 80.0,
-              point: LatLng(
-                  Provider.of<LocationProvider>(context, listen: true)
-                      .getCurrentLocation()
-                      .coords
-                      .latitude,
-                  Provider.of<LocationProvider>(context, listen: true)
-                      .getCurrentLocation()
-                      .coords
-                      .longitude),
+              point: LatLng(widget.latitude!,widget.longitude!
+              ),
               builder: (ctx) => Container(
                 child: Icon(
                   Icons.my_location,

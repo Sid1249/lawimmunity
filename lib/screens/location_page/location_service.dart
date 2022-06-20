@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
 import 'package:flutter/material.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
 import 'package:lawimmunity/screens/location_page/provider/location_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +11,8 @@ class LocationService {
 
   startLocationService(BuildContext context) async {
     locationProvider = Provider.of<LocationProvider>(context, listen: false);
+    Map<String, dynamic> deviceParams = await Config.deviceParams;
+
     bg.BackgroundGeolocation.onLocation(_onLocation, _onLocationError);
     bg.BackgroundGeolocation.onMotionChange(_onMotionChange);
     bg.BackgroundGeolocation.onActivityChange(_onActivityChange);
@@ -24,12 +28,27 @@ class LocationService {
             logLevel: bg.Config.LOG_LEVEL_VERBOSE,
             desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
             distanceFilter: 10.0,
+            locationUpdateInterval: 5000,
+            isMoving: true,
+            // url: 'https://lawimmunity.herokuapp.com/locations',
+            // authorization: bg.Authorization(
+            //   accessToken:
+            //       await FirebaseAuth.instance.currentUser!.getIdToken(),
+            //   refreshToken: FirebaseAuth.instance.currentUser!.refreshToken,
+            // ),
+            // headers: {
+            //   'authorization':
+            //       'Bearer ${await FirebaseAuth.instance.currentUser!.getIdToken()}',
+            // },
+            // params: {
+            //   'uid': FirebaseAuth.instance.currentUser!.uid,
+            // },
             locationAuthorizationRequest: 'Always',
             backgroundPermissionRationale: bg.PermissionRationale(
                 title:
                     "Allow LawImmunity to access this device's location even when the app is closed or not in use.",
                 message:
-                    "This app collects location data to enable recording your trips to work and calculate distance-travelled.",
+                    'This app collects location data to enable recording your trips to work and calculate distance-travelled.',
                 positiveAction: 'Change to "{backgroundPermissionOptionLabel}"',
                 negativeAction: 'Cancel'),
             stopOnTerminate: false,
@@ -38,11 +57,11 @@ class LocationService {
         .then((bg.State state) {
       Provider.of<LocationProvider>(context, listen: false).isLocationShared =
           true;
-      print("[ready] ${state.toMap()}");
+      print('[ready] ${state.toMap()}');
       bg.BackgroundGeolocation.changePace(true).then((bool isMoving) {
         print('[changePace] success $isMoving');
       }).catchError((e) {
-        print('[changePace] ERROR: ' + e.code.toString());
+        print('[changePace] ERROR: ${e.code}');
       });
       bg.BackgroundGeolocation.start();
     }).catchError((error) {
@@ -55,8 +74,7 @@ class LocationService {
   void _onLocation(bg.Location location) {
     print('[location] - $location');
 
-    locationProvider!.currentLocation  = location;
-    String odometerKM = (location.odometer / 1000.0).toStringAsFixed(1);
+    locationProvider!.currentLocation = location;
   }
 
   void _onLocationError(bg.LocationError error) {

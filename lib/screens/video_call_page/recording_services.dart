@@ -14,7 +14,6 @@ class RecordingServices {
   Future<String?> createRoom(context) async {
     print('somethings');
 
-    FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -29,7 +28,7 @@ class RecordingServices {
         var request = http.Request(
             'POST',
             Uri.parse(
-                'http://10.0.2.2:5001/lawimmunity-2aa26/us-central1/getroomtoken'));
+                'https://us-central1-lawimmunity-2aa26.cloudfunctions.net/getroomtoken'));
         request.headers.addAll(headers);
 
         http.StreamedResponse response = await request.send();
@@ -39,7 +38,7 @@ class RecordingServices {
         if (response.statusCode == 200) {
           var token = decodedResponse;
 
-          print("room token = ${token}");
+          print('room token = ${token}');
 
           Navigator.push(
               context,

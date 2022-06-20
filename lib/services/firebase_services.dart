@@ -1,8 +1,4 @@
-import 'dart:convert';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
-import 'package:lawimmunity/helpers/logging.dart';
 
 class FirebaseServices {
   String? getCurrentUid() {
@@ -10,20 +6,6 @@ class FirebaseServices {
       return FirebaseAuth.instance.currentUser!.uid;
     }
     return null;
-  }
-
-  Future<Map<String, dynamic>?> getAppIdKey() async {
-    FirebaseDatabase database = FirebaseDatabase.instance;
-    Future<DatabaseEvent> myRef = database.ref('secret').once();
-    final secretSnapshot = await myRef;
-    if (secretSnapshot.snapshot.exists) {
-      final secretNode = json.decode(json.encode(secretSnapshot.snapshot.value))
-          as Map<String, dynamic>;
-      print_debug(secretNode.toString());
-      return secretNode;
-    } else {
-      return null;
-    }
   }
 
   String getCurrentPhone() {
@@ -35,44 +17,8 @@ class FirebaseServices {
 
   updateLocation() {}
 
-
-  String? generateRoomKeyManual(String roomKey) {
-    print("roomkey = ${roomKey}");
-    String? currentUid = getCurrentUid();
-    print("currUID = ${currentUid}");
-
-    if(currentUid!= null) {
-      FirebaseDatabase database = FirebaseDatabase.instance;
-      DatabaseReference myRef = database.ref('users').child(currentUid).child('videos');
-        myRef.child(roomKey).child('rk').set(roomKey.toString());
-        myRef.child(roomKey).child('ts').set(ServerValue.timestamp);
-        return roomKey;
-
-    }
-    return null;
-  }
-
-
-
-
-  void initOnDisconnect(roomId){
-
-    final presenceRef = FirebaseDatabase.instance.ref("ongoing");
-    presenceRef.onDisconnect().set("I disconnected!");
-
-
-
-  }
-
   String? generateRoomKey() {
-    FirebaseDatabase database = FirebaseDatabase.instance;
-    DatabaseReference myRef = database.ref('users').child('videos');
-    String? key = myRef.push().key;
-    if (key != null) {
-      myRef.child(key).child('rk').set(key.toString());
-      myRef.child(key).child('ts').set(ServerValue.timestamp);
-      return key;
-    }
+    //todo: check if user is pro and has minutes to record
     return null;
   }
 }

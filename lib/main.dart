@@ -1,19 +1,21 @@
 import 'dart:isolate';
 import 'dart:ui';
 
+// import 'package:background_geolocation_firebase/background_geolocation_firebase.dart';
 import 'package:background_geolocation_firebase/background_geolocation_firebase.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lawimmunity/firebase_options.dart';
+import 'package:lawimmunity/helpers/logging.dart';
 import 'package:lawimmunity/provider/Key_value_store_provider.dart';
 import 'package:lawimmunity/screens/auth/login_signup_page.dart';
 import 'package:lawimmunity/screens/dashboard/dashboard_page.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
+    as bg;
 import 'package:lawimmunity/screens/location_page/provider/location_provider.dart';
 import 'package:lawimmunity/services/service_initializer.dart';
 import 'package:lawimmunity/widgets/appbar.dart';
@@ -46,14 +48,10 @@ const String backgroundMessageIsolateName = 'fcm_background_msg_isolate';
 
 void backgroundMessagePortHandler(message) {
   final dynamic data = message.data;
-
 }
 
 Future<void> main() async {
   await initServices();
-
-
-
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
@@ -93,8 +91,8 @@ Future<void> main() async {
   );
 
   backgroundMessageport.listen(backgroundMessagePortHandler);
-  FirebaseAuth.instance.useAuthEmulator('localhost',9099);
-  FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   runApp(MyApp());
 }
 
@@ -112,20 +110,20 @@ class MyApp extends StatelessWidget {
             create: (ctx) => LocationProvider()),
       ],
       child: MaterialApp(
-          title: 'LawImmunity',
-          // routeInformationParser: _appRouter.defaultRouteParser(),
-          // routerDelegate: _appRouter.delegate(),
-          themeMode: ThemeMode.light,
-          debugShowCheckedModeBanner: false,
-          theme: myThemes.buildLightTheme(),
-          darkTheme: myThemes.buildDarkTheme(),
-          home: const HomeRedirectPage(),
-          routes:{
-            '/redirect' : (context) => const HomeRedirectPage(),
-          } ,
-          // localizationsDelegates: AppLocalizations.localizationsDelegates,
-          // supportedLocales: AppLocalizations.supportedLocales,
-          ),
+        title: 'LawImmunity',
+        // routeInformationParser: _appRouter.defaultRouteParser(),
+        // routerDelegate: _appRouter.delegate(),
+        themeMode: ThemeMode.light,
+        debugShowCheckedModeBanner: false,
+        theme: myThemes.buildLightTheme(),
+        darkTheme: myThemes.buildDarkTheme(),
+        home: const HomeRedirectPage(),
+        routes: {
+          '/redirect': (context) => const HomeRedirectPage(),
+        },
+        // localizationsDelegates: AppLocalizations.localizationsDelegates,
+        // supportedLocales: AppLocalizations.supportedLocales,
+      ),
     );
   }
 }
@@ -235,6 +233,15 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
       setState(() {
         mainPage = DashboardPage();
       });
+
+      BackgroundGeolocationFirebase.configure(
+          BackgroundGeolocationFirebaseConfig(
+              locationsCollection:
+                  'users/${FirebaseAuth.instance.currentUser!.uid}',
+              geofencesCollection: 'geofences',
+              updateSingleDocument: true));
+
+      if (!mounted) return;
     } else {
       setState(() {
         mainPage = LoginSignupPage();
@@ -243,33 +250,20 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
   }
 
   Future<void> initPlatformState() async {
+    bg.BackgroundGeolocation.state.then((bg.State value) {
+      Provider.of<LocationProvider>(context, listen: false).isLocationShared =
+          value.enabled;
 
-    // 1.  First configure the Firebase Adapter.
-    BackgroundGeolocationFirebase.configure(BackgroundGeolocationFirebaseConfig(
-        locationsCollection: 'locations',
-        geofencesCollection: 'geofences',
-        updateSingleDocument: false
-    ));
+      if(value.enabled){
 
-    // 2.  Configure BackgroundGeolocation as usual.
-    bg.BackgroundGeolocation.onLocation((bg.Location location) {
-      print('[location] $location');
-    });
+        bg.BackgroundGeolocation.getCurrentPosition().then((value) {
 
-    bg.BackgroundGeolocation.ready(bg.Config(
-        debug: true,
-        logLevel: bg.Config.LOG_LEVEL_VERBOSE,
-        stopOnTerminate: true,
-        startOnBoot: true
-    )).then((bg.State state) {
-      if (!state.enabled) {
-        bg.BackgroundGeolocation.start();
+          Provider.of<LocationProvider>(context, listen: false).currentLocation = value;
+
+
+        });
+
       }
     });
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
   }
 }

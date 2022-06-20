@@ -6,6 +6,8 @@ import 'package:enx_flutter_plugin/enx_player_widget.dart';
 
 import 'package:enx_flutter_plugin/enx_flutter_plugin.dart';
 import 'package:lawimmunity/services/firebase_services.dart';
+import 'package:lawimmunity/widgets/app_logo.dart';
+import 'package:lawimmunity/widgets/text_component.dart';
 
 class MyConfApp extends StatefulWidget {
   MyConfApp({required this.token});
@@ -60,7 +62,7 @@ class Conference extends State<MyConfApp> {
         'scheduled': true,
         'adhoc': false,
         'duration': 30,
-        'single_file_recording':true,
+        'single_file_recording': true,
         'moderators': '1',
         'participants': '3',
         'auto_recording': true,
@@ -98,11 +100,6 @@ class Conference extends State<MyConfApp> {
         streamId = map['streamId'];
       });
       EnxRtc.subscribe(streamId!);
-
-
-
-
-
     };
     print('here 7');
     EnxRtc.onRoomError = (Map<dynamic, dynamic> map) {
@@ -177,7 +174,6 @@ class Conference extends State<MyConfApp> {
     EnxRtc.onVideoEvent = (Map<dynamic, dynamic> map) {
       print('onVideoEvent' + jsonEncode(map));
       EnxRtc.startRecord(); // To start recording
-
 
       setState(() {
         if (map['msg'].toString() == 'Video Off') {
@@ -301,115 +297,132 @@ class Conference extends State<MyConfApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Meet'),
-      ),
       body: Container(
         color: Colors.black,
         child: Column(
           children: [
-            Stack(
-              children: <Widget>[
-                Card(
-                  color: Colors.black,
-                  child: Container(
-                    alignment: Alignment.bottomCenter,
-                    height: MediaQuery.of(context).size.height - 200,
-                    width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      children: <Widget>[
-                        Expanded(
-                          child: EnxPlayerWidget(
-                            0,
-                            local: false,
-                          ),
-                        ),
-                        Container(
-                          color: Colors.white,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width / 6,
-                                child: MaterialButton(
-                                  child: isAudioMuted
-                                      ? Image.asset(
-                                          'assets/mute_audio.png',
-                                          fit: BoxFit.cover,
-                                          height: 30,
-                                          width: 30,
-                                        )
-                                      : Image.asset(
-                                          'assets/unmute_audio.png',
-                                          fit: BoxFit.cover,
-                                          height: 30,
-                                          width: 30,
-                                        ),
-                                  onPressed: _toggleAudio,
-                                ),
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 6,
-                                child: MaterialButton(
-                                  child: Image.asset(
-                                    'assets/camera_switch.png',
-                                    fit: BoxFit.cover,
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                                  onPressed: _toggleCamera,
-                                ),
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 6,
-                                child: MaterialButton(
-                                  child: isVideoMuted
-                                      ? Image.asset(
-                                          'assets/mute_video.png',
-                                          fit: BoxFit.cover,
-                                          height: 30,
-                                          width: 30,
-                                        )
-                                      : Image.asset(
-                                          'assets/unmute_video.png',
-                                          fit: BoxFit.cover,
-                                          height: 30,
-                                          width: 30,
-                                        ),
-                                  onPressed: _toggleVideo,
-                                ),
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 6,
-                                child: MaterialButton(
-                                  child: Image.asset(
-                                    'assets/unmute_speaker.png',
-                                    fit: BoxFit.cover,
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                                  onPressed: _toggleSpeaker,
-                                ),
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 6,
-                                child: MaterialButton(
-                                  child: Image.asset(
-                                    'assets/disconnect.png',
-                                    fit: BoxFit.cover,
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                                  onPressed: _disconnectRoom,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      ],
+            Card(
+              color: Colors.black,
+              child: Container(
+                alignment: Alignment.bottomCenter,
+                height: MediaQuery.of(context).size.height - 10,
+                width: MediaQuery.of(context).size.width,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: EnxPlayerWidget(
+                        0,
+                        local: false,
+                      ),
                     ),
-                  ),
+                    Container(
+                      color: Colors.white,
+                      child: Row(
+                        children: [
+                          // Container(
+                          //   width: MediaQuery.of(context).size.width / 6,
+                          //   child: MaterialButton(
+                          //     child: isAudioMuted
+                          //         ? Image.asset(
+                          //             'assets/mute_audio.png',
+                          //             fit: BoxFit.cover,
+                          //             height: 30,
+                          //             width: 30,
+                          //           )
+                          //         : Image.asset(
+                          //             'assets/unmute_audio.png',
+                          //             fit: BoxFit.cover,
+                          //             height: 30,
+                          //             width: 30,
+                          //           ),
+                          //     onPressed: _toggleAudio,
+                          //   ),
+                          // ),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 6,
+                            child: MaterialButton(
+                              child: Image.asset(
+                                'assets/camera_switch.png',
+                                fit: BoxFit.cover,
+                                height: 30,
+                                width: 30,
+                              ),
+                              onPressed: _toggleCamera,
+                            ),
+                          ),
+                          const Spacer(),
+
+                          Center(
+                            child: TextButton(
+                                onPressed: () {},
+                                child: UpperCaseText(
+                                  'Send SOS to Nominees',
+                                  style: Theme.of(context).textTheme.subtitle2,
+                                )),
+                          ),
+                          const Spacer(),
+                          // Container(
+                          //   width: MediaQuery.of(context).size.width / 6,
+                          //   child: MaterialButton(
+                          //     child: isVideoMuted
+                          //         ? Image.asset(
+                          //             'assets/mute_video.png',
+                          //             fit: BoxFit.cover,
+                          //             height: 30,
+                          //             width: 30,
+                          //           )
+                          //         : Image.asset(
+                          //             'assets/unmute_video.png',
+                          //             fit: BoxFit.cover,
+                          //             height: 30,
+                          //             width: 30,
+                          //           ),
+                          //     onPressed: _toggleVideo,
+                          //   ),
+                          // ),
+                          // Container(
+                          //   width: MediaQuery.of(context).size.width / 6,
+                          //   child: MaterialButton(
+                          //     child: Image.asset(
+                          //       'assets/unmute_speaker.png',
+                          //       fit: BoxFit.cover,
+                          //       height: 30,
+                          //       width: 30,
+                          //     ),
+                          //     onPressed: _toggleSpeaker,
+                          //   ),
+                          // ),
+                          Container(
+                            width: MediaQuery.of(context).size.width / 6,
+                            child: MaterialButton(
+                              child: Image.asset(
+                                'assets/disconnect.png',
+                                fit: BoxFit.cover,
+                                height: 30,
+                                width: 30,
+                              ),
+                              onPressed: _disconnectRoom,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      color: Colors.white,
+                      width: MediaQuery.of(context).size.width,
+                      child: Column(
+                        children: const [
+                          AppLogo(),
+                          Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text('RECORDING LIVE VIDEO + SAVING LOCATION'),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-              ],
+              ),
             )
           ],
         ),

@@ -9,7 +9,7 @@ class LocationProvider extends ChangeNotifier {
 
   DateTime _updateTime = DateTime.now();
 
-  late Location _currentLocation;
+  Location? _currentLocation;
 
   bool get isLocationShared => _isLocationShared;
 
@@ -26,8 +26,20 @@ class LocationProvider extends ChangeNotifier {
     _updateTime = value;
   }
 
-  Location getCurrentLocation() {
+
+  Location? getCurrentLocation() {
+    // if(_currentLocation != null) {
     return _currentLocation;
+    // }else{
+    //   if(isLocationShared){
+    //
+    //     BackgroundGeolocation.getCurrentPosition().then((location) {
+    //       currentLocation = location;
+    //     });
+    //   }else{
+    //     return null;
+    //   }
+    // }
   }
 
   set currentLocation(Location value) {
