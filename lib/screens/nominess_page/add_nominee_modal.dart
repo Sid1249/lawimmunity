@@ -1,31 +1,29 @@
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:lawimmunity/helpers/toast.dart';
-import 'package:lawimmunity/screens/home_redirect_page.dart';
-import 'package:lawimmunity/widgets/app_logo.dart';
-import 'package:lawimmunity/widgets/appbar.dart';
+import 'package:lawimmunity/services/firebase_services.dart';
 import 'package:lawimmunity/widgets/custom_form_textfield.dart';
-import 'package:lawimmunity/widgets/custom_raised_button.dart';
+import 'package:http/http.dart' as http;
 import 'package:lawimmunity/widgets/phone_input_field.dart';
 
 class AddNomineeModal {
   bool isAutoValidate = false;
   var errorMessage = '';
-  String? phoneNumberR;
+  String? nomineePhoneNumberR;
   String? nomineeNameR;
   String? countryCodeR;
+  Function(bool)? nomineeAddedOrNotCallbackR;
 
   showAddNomineeModal(
       {String? phoneNumber,
       String? nomineeName,
       String? countryCode,
       bool isEditMode = false,
+      required Function(bool) nomineeAddedOrNotCallback,
       required BuildContext context}) {
-    phoneNumberR = phoneNumber;
+    nomineePhoneNumberR = phoneNumber;
     nomineeNameR = nomineeName;
     countryCodeR = countryCode;
     errorMessage = '';
+    nomineeAddedOrNotCallbackR = nomineeAddedOrNotCallback;
 
     showModalBottomSheet(
       context: context,
@@ -53,7 +51,7 @@ class AddNomineeModal {
                           Padding(
                             padding: const EdgeInsets.only(top: 22.0),
                             child: Text(
-                              isEditMode ? 'ADD NOMINEE' : 'EDIT NOMINEE',
+                              isEditMode ? 'EDIT NOMINEE' : 'ADD NOMINEE',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                   color:
@@ -85,18 +83,47 @@ class AddNomineeModal {
                             child: PhoneInputField(
                               labelName: 'NOMINEE PHONE',
                               onPhoneChanged: (value) {
-                                phoneNumberR = value;
+                                nomineePhoneNumberR = value;
                               },
                             ),
                           ),
                           TextButton(
-                            onPressed: () {},
+                            onPressed: () async {
+                              String? headerToken =
+                                  await FirebaseServices().getUserToken();
+                              if (headerToken != null) {
+                                var url = Uri.parse(
+                                    'http://10.0.2.2:5001/lawimmunity-2aa26/us-central1/createnominee');
+
+                                try {
+                                  var response = await http.post(url, body: {
+                                    'nomineephone': '$nomineePhoneNumberR',
+                                    'nomineename': '$nomineeNameR'
+                                  }, headers: {
+                                    'authorization': 'Bearer $headerToken',
+                                  });
+
+                                  print(
+                                      'Response status: ${response.statusCode}');
+                                  print(
+                                      'Response body: ${response.reasonPhrase}');
+
+                                  if (response.statusCode == 300) {
+                                    nomineeAddedOrNotCallbackR!(true);
+                                  } else {
+                                    nomineeAddedOrNotCallbackR!(false);
+                                  }
+                                } catch (e) {
+                                  nomineeAddedOrNotCallbackR!(false);
+                                }
+                              } else {}
+                            },
                             child: const Text(
                               'SAVE NOMINEE',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 color: Color(0xffeb9404),
-                                fontSize: 12,
+                                fontSize: 17,
                                 fontFamily: 'Roboto',
                                 fontWeight: FontWeight.w800,
                               ),

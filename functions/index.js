@@ -16,10 +16,10 @@ const db = getFirestore();
 exports.webookapi = functions.https.onRequest((req, res) => {
   if (req.rawBody != null) {
     console.info("start req body");
-    console.info(req.rawBody);
+    console.info(req.body);
     console.info("end req body");
 
-    const jsonRoooomHook = JSON5.parse(req.rawBody);
+    const jsonRoooomHook = JSON5.parse(req.body);
 
 
     console.log(`json room hook room id = ${jsonRoooomHook.room_id}`);
@@ -48,20 +48,40 @@ exports.webookapi = functions.https.onRequest((req, res) => {
               if (queryResult == null || queryResult.data() == null || queryResult.data().rooms == null || (!queryResult.data().rooms.includes(`${jsonRoooomHook.room_id}`))) {
                 const userRef = db.collection("users").doc(roomCdrResponse.data.cdr[0].room.room_details.owner_ref);
 
-
                 userRef.set({
                   uid: `${roomCdrResponse.data.cdr[0].room.room_details.owner_ref}`,
                   minused: FieldValue.increment((Math.floor(roomCdrResponse.data.cdr[0].room.duration / 60))),
                   rooms: FieldValue.arrayUnion(`${jsonRoooomHook.room_id}`),
                 }, {merge: true});
+
+                console.log(jsonRoooomHook.room_id);
+                // res.status(200).send("roomdrop notification");
+
+
+                axios.get(`https://api.enablex.io/video/v2/archive/room/${jsonRoooomHook.room_id}`.trim(), {
+                  headers: {
+                    "accept": "application/json",
+                    "Authorization": "Basic NjI5OWIyYmZmMmUwYjEzMDk0NzJmNjFhOnllNHVleXV1cnlIdVFhenV0eXZlTHVheXp1cmVxeTl5TnlyeQ==",
+                  },
+                }) .then((archiveRoute) => {
+                  const roomRef = db.collection("rooms").doc(jsonRoooomHook.room_id);
+
+                  console.log(archiveRoute.data.archive);
+                  if (archiveRoute != null && archiveRoute.data.archive != null && archiveRoute.data.archive[0] != null && archiveRoute.data.archive[0].recording != null && archiveRoute.data.archive[0].recording[0] != null && archiveRoute.data.archive[0].recording[0].url != null) {
+                    roomRef.set({
+                      video: `${archiveRoute.data.archive[0].recording[0].url}`.trim().replace("https://", "https://lawimmunity.com@gmail.com:193653@"),
+                    }, {merge: true});
+                  }
+
+
+                  res.status(200).send("roomdrop notification");
+                }).catch((error) => {
+                  res.status(500).send("cannot fetch archive");
+                });
               }
             });
-
-
-            console.log(jsonRoooomHook.room_id);
-            res.status(200).send("roomdrop notification");
           }).catch((error) => {
-            res.status(500).send("cannot fetch archive");
+            res.status(500).send("cannot fetch cdr");
           });
 
 
@@ -69,41 +89,74 @@ exports.webookapi = functions.https.onRequest((req, res) => {
         }
         case "recording": {
           console.log(jsonRoooomHook.recording[0]);
+          axios.get(`https://api.enablex.io/video/v2/archive/room/${jsonRoooomHook.room_id}`.trim(), {
+            headers: {
+              "accept": "application/json",
+              "Authorization": "Basic NjI5OWIyYmZmMmUwYjEzMDk0NzJmNjFhOnllNHVleXV1cnlIdVFhenV0eXZlTHVheXp1cmVxeTl5TnlyeQ==",
+            },
+          }) .then((archiveRoute) => {
+            if (archiveRoute != null && archiveRoute.data.archive != null && archiveRoute.data.archive[0] != null && archiveRoute.data.archive[0].recording != null && archiveRoute.data.archive[0].recording[0] != null && archiveRoute.data.archive[0].recording[0].url != null) {
+              const roomRef = db.collection("rooms").doc(jsonRoooomHook.room_id);
 
-          const roomRef = db.collection("rooms").doc(jsonRoooomHook.room_id);
+              roomRef.set({
+                video: `${archiveRoute.data.archive[0].recording[0].url}`.trim().replace("https://", "https://lawimmunity.com@gmail.com:193653@"),
+              }, {merge: true});
+            }
 
-
-          roomRef.set({
-            video: jsonRoooomHook.recording[0],
-          }, {merge: true});
-          res.status(200).send("recording notification");
+            res.status(200).send("recording notification");
+          }).catch((error) => {
+            res.status(500).send("cannot fetch archive");
+          });
 
           break;
         }
 
         case "transcoded": {
-          console.log(jsonRoooomHook.recording);
-          const roomRef = db.collection("rooms").doc(jsonRoooomHook.room_id);
+          axios.get(`https://api.enablex.io/video/v2/archive/room/${jsonRoooomHook.room_id}`.trim(), {
+            headers: {
+              "accept": "application/json",
+              "Authorization": "Basic NjI5OWIyYmZmMmUwYjEzMDk0NzJmNjFhOnllNHVleXV1cnlIdVFhenV0eXZlTHVheXp1cmVxeTl5TnlyeQ==",
+            },
+          }) .then((archiveRoute) => {
+            console.log(archiveRoute.data.archive[0].transcoded[0].url);
 
 
-          roomRef.set({
-            video: jsonRoooomHook.recording,
-          }, {merge: true});
-          res.status(200).send("transcoded notification");
+            if (archiveRoute != null && archiveRoute.data != null && archiveRoute.data.archive != null && archiveRoute.data.archive[0] != null && archiveRoute.data.archive[0].transcoded != null && archiveRoute.data.archive[0].transcoded[0] != null && archiveRoute.data.archive[0].transcoded[0].url != null) {
+              const roomRef = db.collection("rooms").doc(jsonRoooomHook.room_id);
+
+
+              roomRef.set({
+                video: `${archiveRoute.data.archive[0].transcoded[0].url}`.trim().replace("https://", "https://lawimmunity.com@gmail.com:193653@"),
+              }, {merge: true});
+            }
+
+
+            res.status(200).send("transcoded notification");
+          }).catch((error) => {
+            res.status(500).send("cannot fetch archive");
+          });
           break;
         }
 
         case "file-transfer": {
-          console.log(jsonRoooomHook.files[0].url);
+          axios.get(`https://api.enablex.io/video/v2/archive/room/${jsonRoooomHook.room_id}`.trim(), {
+            headers: {
+              "accept": "application/json",
+              "Authorization": "Basic NjI5OWIyYmZmMmUwYjEzMDk0NzJmNjFhOnllNHVleXV1cnlIdVFhenV0eXZlTHVheXp1cmVxeTl5TnlyeQ==",
+            },
+          }) .then((archiveRoute) => {
+            const roomRef = db.collection("rooms").doc(jsonRoooomHook.room_id);
 
-          const roomRef = db.collection("rooms").doc(jsonRoooomHook.room_id);
+
+            roomRef.set({
+              video: `${archiveRoute.data.archive[0].transcoded[0].url}`.trim().replace("https://", "https://lawimmunity.com@gmail.com:193653@"),
+            }, {merge: true});
 
 
-          roomRef.set({
-            video: jsonRoooomHook.files[0].url,
-          }, {merge: true});
-
-          res.status(200).send("file-transfer notification");
+            res.status(200).send("file-transfer notification");
+          }).catch((error) => {
+            res.status(500).send("cannot fetch archive");
+          });
           break;
         }
         default:
@@ -249,14 +302,25 @@ exports.createnominee = functions.https.onRequest((req, res) => {
 
       console.log("create room executed");
       if (req.user != null && req.user.uid != null) {
-        const nomieeReqJson = JSON5.parse(req.rawBody);
-        if (nomieeReqJson!= null && nomieeReqJson.nomineephone != null && nomieeReqJson.nomineephone != "") {
+        console.log(req.body);
+        const nomieeReqJson = req.body;
+        if (nomieeReqJson!= null && nomieeReqJson.nomineephone != null && nomieeReqJson.nomineephone != "" && nomieeReqJson.nomineename != null && nomieeReqJson.nomineename != "") {
           admin.auth().getUserByPhoneNumber(nomieeReqJson.nomineephone)
               .then((userRecord) => {
+                console.log("user exists");
+
+
                 console.log(`Successfully fetched user data:  ${userRecord.toJSON()}`);
+                console.log("Session: %j", userRecord.toJSON());
+
                 const nomineeName = nomieeReqJson.nomineename;
-                const nomineePhone = userRecord.toJSON().phone;
-                const nomineeUID = userRecord.toJSON().uid;
+                console.log(`nomineeName = :  ${nomieeReqJson.nomineename}`);
+
+                const nomineePhone = userRecord.phoneNumber;
+                console.log(`nomineePhone = :  ${userRecord.phoneNumber}`);
+
+                const nomineeUID = userRecord.uid;
+                console.log(`nomineeUID = :  ${userRecord.uid}`);
 
 
                 const userRef = db.collection("users").doc(req.user.uid);
@@ -270,11 +334,13 @@ exports.createnominee = functions.https.onRequest((req, res) => {
                   },
                 };
 
+                console.log(`nomineemap = :  ${nomineesmap}`);
+
                 userRef.set({
-                  nominee: nomineesmap,
+                  nominees: nomineesmap,
                 }, {merge: true});
 
-                res.status(200).send("success, nominee was a user and added to user doc ");
+                res.status(300).send("success, nominee was a user and added to user doc ");
               })
               .catch((error) => {
                 admin.auth()
@@ -287,9 +353,8 @@ exports.createnominee = functions.https.onRequest((req, res) => {
                       console.log("Successfully created new user:", userRecord.uid);
 
                       const nomineeName = nomieeReqJson.nomineename;
-                      const nomineePhone = userRecord.toJSON().phone;
-                      const nomineeUID = userRecord.toJSON().uid;
-
+                      const nomineePhone = userRecord.phoneNumber;
+                      const nomineeUID = userRecord.uid;
 
                       const userRef = db.collection("users").doc(req.user.uid);
 
@@ -304,9 +369,9 @@ exports.createnominee = functions.https.onRequest((req, res) => {
 
                       userRef.set({
                         nomieelist: FieldValue.arrayUnion(userRecord.toJSON().uid),
-                        nominee: nomineesmap,
+                        nominees: nomineesmap,
                       }, {merge: true});
-                      res.status(200).send("New user created as nominee");
+                      res.status(300).send("New user created as nominee");
                     })
                     .catch((error) => {
                       console.log("Error creating new user:", error);
@@ -562,7 +627,7 @@ const createroom = (req, res, next) => {
 
                     //
                     console.log(`sucess-> ${JSON.stringify(responseToken.data.token)}`);
-                    res.status(200).send(responseToken.data.token);
+                    res.status(300).send(responseToken.data.token);
 
                     return;
                   } else {

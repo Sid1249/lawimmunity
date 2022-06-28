@@ -35,7 +35,7 @@ class RecordingServices {
 
         var decodedResponse = await response.stream.bytesToString();
 
-        if (response.statusCode == 200) {
+        if (response.statusCode == 300) {
           var token = decodedResponse;
 
           print('room token = ${token}');
@@ -44,7 +44,7 @@ class RecordingServices {
               context,
               MaterialPageRoute(
                   builder: (context) => MyConfApp(
-                        token: '${token.toString().trim()}',
+                        token: token.toString().trim(),
                       )));
           print(decodedResponse);
         } else {

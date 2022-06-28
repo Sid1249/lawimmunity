@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lawimmunity/main.dart';
+import 'package:lawimmunity/screens/faq_page/faq_page.dart';
 import 'package:lawimmunity/screens/settings_page/delete_data_modal.dart';
 import 'package:lawimmunity/widgets/custom_app_bar.dart';
 
@@ -23,13 +23,14 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Scaffold(
         appBar: CustomAppBar(
           title: 'Settings',
-          actionWidgets: [IconButton(onPressed: (){
-
-            FirebaseAuth.instance.signOut();
-            Navigator.popUntil(context, ModalRoute.withName('/redirect'));
-
-
-          }, icon: const Icon(Icons.logout))],
+          actionWidgets: [
+            IconButton(
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                  Navigator.popUntil(context, ModalRoute.withName('/redirect'));
+                },
+                icon: const Icon(Icons.logout))
+          ],
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -155,10 +156,10 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: const Text(
                               'ENABLE 3 SECONDS TIMER BEFORE RECORDING VIDEO'),
                           trailing: CupertinoSwitch(
-                            value: _switchValueNotifyNominees,
+                            value: _switchValue3secTimer,
                             onChanged: (value) {
                               setState(() {
-                                _switchValueNotifyNominees = value;
+                                _switchValue3secTimer = value;
                               });
                             },
                           )),
@@ -179,12 +180,16 @@ class _SettingsPageState extends State<SettingsPage> {
                       child: ListTile(
                           title: const Text(
                               'SYNC LOCATION EVEN WHEN NOT USING APP'),
-                          subtitle: Text('ONLY FOR PRO',style: TextStyle(color: Theme.of(context).colorScheme.error),),
+                          subtitle: Text(
+                            'ONLY FOR PRO',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.error),
+                          ),
                           trailing: CupertinoSwitch(
-                            value: _switchValueNotifyNominees,
+                            value: _switchValueSyncLocation,
                             onChanged: (value) {
                               setState(() {
-                                _switchValueNotifyNominees = value;
+                                _switchValueSyncLocation = value;
                               });
                             },
                           )),
@@ -253,11 +258,9 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                   ],
                 ),
-
                 const SizedBox(
                   height: 30,
                 ),
-
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
@@ -315,9 +318,30 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: Text('GIFT LAW IMMUNITY TO SOMEONE'),
                           trailing: Icon(Icons.navigate_next)),
                     ),
+                    const SizedBox(
+                      height: 14,
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: Colors.black,
+                          width: 1,
+                        ),
+                        color: const Color(0xfff3f5ed),
+                      ),
+                      child: ListTile(
+                        title: const Text('FREQUENTLY ASKED QUESTIONS'),
+                        trailing: const Icon(Icons.navigate_next),
+                        onTap: () {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => FAQPage()));
+                        },
+                      ),
+                    ),
                   ],
                 ),
-
                 const SizedBox(
                   height: 20,
                 ),
@@ -337,7 +361,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(14.0),
-                    child: Text('ABOUT US',style: Theme.of(context).textTheme.titleSmall,),
+                    child: Text(
+                      'ABOUT US',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                   ),
                 ),
                 const SizedBox(
@@ -352,7 +379,10 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(14.0),
-                    child: Text('CONTACT US',style: Theme.of(context).textTheme.titleSmall,),
+                    child: Text(
+                      'CONTACT US',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                   ),
                 ),
                 TextButton(

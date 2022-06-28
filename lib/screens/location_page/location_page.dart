@@ -11,6 +11,7 @@ import 'package:lawimmunity/widgets/location_head_widget.dart';
 import 'package:lawimmunity/widgets/text_component.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:latlong2/latlong.dart';
 
 class LocationPage extends StatefulWidget {
   const LocationPage({Key? key}) : super(key: key);
@@ -110,24 +111,91 @@ class _LocationPageState extends State<LocationPage> {
                           ),
                           height: MediaQuery.of(context).size.height / 3,
                           width: MediaQuery.of(context).size.height - 200,
-                          child: FlutterMapWrapper(
-                            latitude: Provider.of<LocationProvider>(context,
-                                    listen: true)
-                                .getCurrentLocation()!
-                                .coords
-                                .latitude,
-                            longitude: Provider.of<LocationProvider>(context,
-                                    listen: true)
-                                .getCurrentLocation()!
-                                .coords
-                                .latitude,
-                            wrapperController: provider.mapWrapperController,
-                            options: MapOptions(
-                                crs: const Epsg3857(),
-                                zoom: 15.0,
-                                maxZoom: 17.0,
-                                minZoom: 1.0),
-                          ),
+                          child: Provider.of<LocationProvider>(context,
+                                      listen: true)
+                                  .getCurrentLocation()!
+                                  .isMoving
+                              ? FlutterMapWrapper(
+                                  latitude: Provider.of<LocationProvider>(
+                                          context,
+                                          listen: true)
+                                      .getCurrentLocation()!
+                                      .coords
+                                      .latitude.toDouble(),
+                                  longitude: Provider.of<LocationProvider>(
+                                          context,
+                                          listen: true)
+                                      .getCurrentLocation()!
+                                      .coords
+                                      .longitude.toDouble(),
+                                  wrapperController:
+                                      provider.mapWrapperController,
+                                  options: MapOptions(
+                                      crs: const Epsg3857(),
+                                      zoom: 15.0,
+                                      maxZoom: 17.0,
+                                      minZoom: 1.0),
+                                )
+                              : FlutterMap(
+                                  options: MapOptions(
+                                    crs: const Epsg3857(),
+                                    zoom: 15.0,
+                                    maxZoom: 17.0,
+                                    minZoom: 1.0,
+                                    center: LatLng(
+                                        Provider.of<LocationProvider>(context,
+                                                listen: true)
+                                            .getCurrentLocation()!
+                                            .coords
+                                            .latitude.toDouble(),
+                                        Provider.of<LocationProvider>(context,
+                                                listen: true)
+                                            .getCurrentLocation()!
+                                            .coords
+                                            .longitude.toDouble()),
+                                  ),
+                                  layers: [
+                                    TileLayerOptions(
+                                      urlTemplate:
+                                          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                                      subdomains: ['a', 'b', 'c'],
+                                      attributionBuilder: (_) {
+                                        return Text(
+                                            "© OpenStreetMap contributors");
+                                      },
+                                    ),
+                                    MarkerLayerOptions(
+                                      markers: [
+                                        Marker(
+                                          width: 80.0,
+                                          height: 80.0,
+                                          point: LatLng(
+                                              Provider.of<LocationProvider>(
+                                                      context,
+                                                      listen: true)
+                                                  .getCurrentLocation()!
+                                                  .coords
+                                                  .latitude.toDouble(),
+                                              Provider.of<LocationProvider>(
+                                                      context,
+                                                      listen: true)
+                                                  .getCurrentLocation()!
+                                                  .coords
+                                                  .longitude.toDouble()),
+                                          builder: (ctx) => Container(
+                                            child: Icon(
+                                              Icons.my_location,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondary,
+                                              size: 40,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                         ),
                       ],
                     );
@@ -140,7 +208,7 @@ class _LocationPageState extends State<LocationPage> {
                     child: ListEmptyContainer(
                   icon: Icons.location_history,
                   emptyText:
-                      'Location sharing is off so your live location is not being synced with LawImmunity',
+                      'Location sharing is off so your live location is not being synced with your nominees',
                 )),
               // const SizedBox(
               //   height: 2,
@@ -244,14 +312,14 @@ class _LocationPageState extends State<LocationPage> {
               // const SizedBox(
               //   height: 13,
               // ),
-              Text.rich(
+              AutoSizeText.rich(
                 TextSpan(text: '', children: [
                   TextSpan(
                       text: 'NOTE: ',
                       style: Theme.of(context).textTheme.labelMedium),
                   TextSpan(
                       text:
-                          'YOUR NOMINEES CAN ACCESS YOUR LIVE LOCATION WHEN LOCATION SHARING IS ON',
+                          'TO SAVE YOUR BATTERY, LOCATION IS ONLY SHARED WHEN YOU ARE MOVING, ELSE THE APP GOES TO DEEP SLEEP MODE.',
                       style: Theme.of(context).textTheme.labelSmall),
                 ]),
                 textAlign: TextAlign.justify,

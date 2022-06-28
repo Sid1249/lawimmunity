@@ -1,7 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lawimmunity/screens/timeline_page/models/timeline_videos_model.dart';
 import 'package:lawimmunity/screens/timeline_page/timeline_widget.dart';
+import 'package:lawimmunity/services/firebase_services.dart';
 import 'package:lawimmunity/widgets/custom_app_bar.dart';
 import 'package:lawimmunity/widgets/custom_raised_button.dart';
 import 'package:lawimmunity/widgets/description_widget.dart';
@@ -19,7 +21,6 @@ class TimelinePage extends StatefulWidget {
 
 class _TimelinePageState extends State<TimelinePage> {
   bool reversed = false;
-  List<TimelineWidget> listTimeLineVideos = [];
 
   @override
   Widget build(BuildContext context) {
@@ -42,17 +43,44 @@ class _TimelinePageState extends State<TimelinePage> {
               height: 16,
             ),
             Expanded(
-                child: listTimeLineVideos.isNotEmpty
-                    ? const ListEmptyContainer(
-                        emptyText:
-                            'YOUR VIDEO TIMELINE HISTORY IS EMPTY!\nWHEN YOU RECORD VIDEOS USING LAWIMMUNITY CAMERA, THEY WILL APPEAR HERE',
-                        icon: Icons.delete_outline_outlined,
-                      )
-                    : Timeline(
-                        children: listTimeLineVideos,
-                        indicatorColor: Colors.orange[300]!,
-                        indicatorSize: 40,
-                      )),
+                child: FutureBuilder<List<TimelineWidget>>(
+              future: buildTimelineVideos(), // async work
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<TimelineWidget>> snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Text('Loading....');
+                  default:
+                    if (snapshot.hasError) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Error: ${snapshot.error}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .subtitle2!
+                              .copyWith(
+                                  color: Theme.of(context).colorScheme.error),
+                        ),
+                      );
+                    } else {
+                      if (snapshot.data!.isEmpty) {
+                        return const ListEmptyContainer(
+                          emptyText:
+                              'YOUR VIDEO TIMELINE HISTORY IS EMPTY!\nWHEN YOU RECORD VIDEOS USING LAWIMMUNITY CAMERA, THEY WILL APPEAR HERE',
+                          icon: Icons.delete_outline_outlined,
+                        );
+                      } else {
+                        return Timeline(
+                          indicatorColor: Colors.orange[300]!,
+                          indicatorSize: 40,
+                          children: snapshot.data!,
+                        );
+                      }
+                    }
+                }
+              },
+            )),
             const SizedBox(
               height: 1,
             ),
@@ -62,10 +90,22 @@ class _TimelinePageState extends State<TimelinePage> {
     );
   }
 
-  void buildTimelineVideos() {
-    listTimeLineVideos = [];
-    for (int i = 0; i < 2; i++) {
-      listTimeLineVideos.add(TimelineWidget());
+  Future<List<TimelineWidget>> buildTimelineVideos() async {
+    List<TimelineWidget> listTimeLineVideos = [];
+    final timelineVideos = await FirebaseServices().getVideoList();
+    for (int i =0 ; i < timelineVideos.length ; i++) {
+      final element = timelineVideos[i];
+      listTimeLineVideos.add(TimelineWidget(
+        index: i,
+        videoId: element.roomid ?? '',
+        videoLink: element.video ?? '',
+        time: element.time,
+        coords: element.coords ?? '',
+      ));
     }
+    return listTimeLineVideos;
   }
 }
+
+// listTimeLineVideos.isNotEmpty
+// ?

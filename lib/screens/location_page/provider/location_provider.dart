@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:lawimmunity/widgets/flutter_map_widget.dart';
 

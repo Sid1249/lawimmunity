@@ -5,9 +5,16 @@ class NomineeWidget extends StatelessWidget {
   final String title;
   final String subtitle;
   final int index;
+  final String uid;
+  final Function() callback;
 
   const NomineeWidget(
-      {Key? key, required this.index, this.title = '', this.subtitle = ''})
+      {Key? key,
+      required this.index,
+      this.title = '',
+      this.subtitle = '',
+      required this.uid,
+      required this.callback})
       : super(key: key);
 
   @override
@@ -32,18 +39,28 @@ class NomineeWidget extends StatelessWidget {
         ),
       ),
       leading: Padding(
-        padding: const EdgeInsets.only(top: 3,left: 8,right: 8),
-        child: Text('#${index + 1}',style: const TextStyle(
-          color: Colors.black,
-          fontSize: 14,
-          fontFamily: 'Roboto',
-          fontWeight: FontWeight.w500,
-          letterSpacing: 2.45,
-        ),),
+        padding: const EdgeInsets.only(top: 3, left: 8, right: 8),
+        child: Text(
+          '#${index + 1}',
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.w500,
+            letterSpacing: 2.45,
+          ),
+        ),
       ),
       trailing: IconButton(
-        icon: Icon(Icons.dehaze_sharp,color: Theme.of(context).colorScheme.onPrimary,),
-        onPressed: () {},
+        icon: Icon(
+          Icons.dehaze_sharp,
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
+        onPressed: () {
+
+
+
+        },
       ),
     );
   }

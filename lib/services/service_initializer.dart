@@ -7,8 +7,6 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 
 
 Future<void> initServices() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   bg.BackgroundGeolocation.registerHeadlessTask(headlessTask);
   GetIt getIt = GetIt.instance;
   getIt.registerSingleton(await SharedPreferences.getInstance());

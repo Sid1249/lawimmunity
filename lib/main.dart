@@ -3,6 +3,7 @@ import 'dart:ui';
 
 // import 'package:background_geolocation_firebase/background_geolocation_firebase.dart';
 import 'package:background_geolocation_firebase/background_geolocation_firebase.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -16,6 +17,7 @@ import 'package:lawimmunity/screens/auth/login_signup_page.dart';
 import 'package:lawimmunity/screens/dashboard/dashboard_page.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart'
     as bg;
+import 'package:lawimmunity/screens/faq_page/faq_provider.dart';
 import 'package:lawimmunity/screens/location_page/provider/location_provider.dart';
 import 'package:lawimmunity/services/service_initializer.dart';
 import 'package:lawimmunity/widgets/appbar.dart';
@@ -51,6 +53,13 @@ void backgroundMessagePortHandler(message) {
 }
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+
+
   await initServices();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
@@ -91,8 +100,7 @@ Future<void> main() async {
   );
 
   backgroundMessageport.listen(backgroundMessagePortHandler);
-  // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
-  // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
+
   runApp(MyApp());
 }
 
@@ -108,6 +116,8 @@ class MyApp extends StatelessWidget {
         Provider<KeyValueStore>(create: (context) => KeyValueStoreImpl()),
         ChangeNotifierProvider<LocationProvider>(
             create: (ctx) => LocationProvider()),
+        ChangeNotifierProvider<FAQProvider>(
+            create: (ctx) => FAQProvider()),
       ],
       child: MaterialApp(
         title: 'LawImmunity',
@@ -221,10 +231,10 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
             style: GoogleFonts.baskervville(
                 fontSize: 22, color: Colors.black, fontWeight: FontWeight.w300),
           ),
-          SizedBox(
+          const SizedBox(
             height: 5,
           ),
-          Center(child: CircularProgressIndicator())
+          const Center(child: CircularProgressIndicator())
         ],
       )),
     );

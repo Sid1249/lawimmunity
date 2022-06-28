@@ -158,12 +158,16 @@ class _TimelinePainter extends CustomPainter {
     );
 
     final bottom = size.bottomLeft(Offset(indicatorRadius, 0.0 + halfItemGap));
+
+    final right = size.bottomLeft(Offset(indicatorRadius, 0.0 + halfItemGap));
+
+
     final centerBottom = size.centerLeft(
       Offset(indicatorRadius, indicatorMargin),
     );
 
-    if (!isFirst) canvas.drawLine(top, bottom, linePaint);
-    if (!isLast) canvas.drawLine(top, bottom, linePaint);
+     canvas.drawLine(top, bottom, linePaint);
+     canvas.drawLine(top, bottom, linePaint);
 
     if (!hideDefaultIndicator) {
       final Offset offsetCenter = size.topLeft(Offset(indicatorRadius, 28));
