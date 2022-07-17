@@ -93,8 +93,10 @@ class AddNomineeModal {
                                   await FirebaseServices().getUserToken();
                               if (headerToken != null) {
                                 var url = Uri.parse(
-                                    'http://10.0.2.2:5001/lawimmunity-2aa26/us-central1/createnominee');
+                                    'https://us-central1-lawimmunity-2aa26.cloudfunctions.net/createnominee');
 
+                                // http://10.0.2.2:5001/lawimmunity-2aa26/us-central1/createnominee
+                                // https://us-central1-lawimmunity-2aa26.cloudfunctions.net/createnominee
                                 try {
                                   var response = await http.post(url, body: {
                                     'nomineephone': '$nomineePhoneNumberR',

@@ -4,7 +4,6 @@ import 'dart:ui';
 // import 'package:background_geolocation_firebase/background_geolocation_firebase.dart';
 import 'package:background_geolocation_firebase/background_geolocation_firebase.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +34,14 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
         options: DefaultFirebaseOptions.currentPlatform);
   }
 
+  FirebaseFirestore.instance.collection('temp').doc('temp2').set(
+
+
+    {
+      "loc": "hello",
+    }
+  );
+
   final port = IsolateNameServer.lookupPortByName(backgroundMessageIsolateName);
   port?.send(message);
 
@@ -56,13 +63,15 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   // FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
+  // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
   // FirebaseFunctions.instance.useFunctionsEmulator('localhost', 5001);
   // FirebaseFirestore.instance.useFirestoreEmulator('localhost', 8080);
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
 
   await initServices();
 
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   if (!kIsWeb) {
     channel = const AndroidNotificationChannel(
@@ -116,8 +125,7 @@ class MyApp extends StatelessWidget {
         Provider<KeyValueStore>(create: (context) => KeyValueStoreImpl()),
         ChangeNotifierProvider<LocationProvider>(
             create: (ctx) => LocationProvider()),
-        ChangeNotifierProvider<FAQProvider>(
-            create: (ctx) => FAQProvider()),
+        ChangeNotifierProvider<FAQProvider>(create: (ctx) => FAQProvider()),
       ],
       child: MaterialApp(
         title: 'LawImmunity',
@@ -248,7 +256,8 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
           BackgroundGeolocationFirebaseConfig(
               locationsCollection:
                   'users/${FirebaseAuth.instance.currentUser!.uid}',
-              geofencesCollection: 'geofences',
+              geofencesCollection:
+                  'users/${FirebaseAuth.instance.currentUser!.uid}',
               updateSingleDocument: true));
 
       if (!mounted) return;
@@ -264,15 +273,11 @@ class _HomeRedirectPageState extends State<HomeRedirectPage> {
       Provider.of<LocationProvider>(context, listen: false).isLocationShared =
           value.enabled;
 
-      if(value.enabled){
-
+      if (value.enabled) {
         bg.BackgroundGeolocation.getCurrentPosition().then((value) {
-
-          Provider.of<LocationProvider>(context, listen: false).currentLocation = value;
-
-
+          Provider.of<LocationProvider>(context, listen: false)
+              .currentLocation = value;
         });
-
       }
     });
   }

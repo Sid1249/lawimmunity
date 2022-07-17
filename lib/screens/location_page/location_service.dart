@@ -3,6 +3,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
     as bg;
 import 'package:flutter/material.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
+import 'package:lawimmunity/helpers/toast.dart';
 import 'package:lawimmunity/screens/location_page/provider/location_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -55,15 +56,26 @@ class LocationService {
             startOnBoot: true,
             enableHeadless: true))
         .then((bg.State state) {
-      Provider.of<LocationProvider>(context, listen: false).isLocationShared =
-          true;
       print('[ready] ${state.toMap()}');
       bg.BackgroundGeolocation.changePace(true).then((bool isMoving) {
         print('[changePace] success $isMoving');
       }).catchError((e) {
-        print('[changePace] ERROR: ${e.code}');
+        print('[changePace] ERROR: ${e}');
       });
-      bg.BackgroundGeolocation.start();
+      bg.BackgroundGeolocation.start().then((value) {
+        Provider.of<LocationProvider>(context, listen: false).isLocationShared =
+            true;
+      }).onError((error, stackTrace) {
+
+        print('[start] ERROR: $error');
+
+        Provider.of<LocationProvider>(context, listen: false).isLocationShared =
+            false;
+        error.toString().contains('Permission denied')
+            ? showToast('Location permission is required')
+            : showToast('$error');
+        throw stackTrace;
+      });
     }).catchError((error) {
       Provider.of<LocationProvider>(context, listen: false).isLocationShared =
           false;

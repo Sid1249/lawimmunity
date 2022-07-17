@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lawimmunity/screens/faq_page/faq_page.dart';
+import 'package:lawimmunity/screens/proscreen/pro_pricing_page.dart';
 import 'package:lawimmunity/screens/settings_page/delete_data_modal.dart';
 import 'package:lawimmunity/widgets/custom_app_bar.dart';
 
@@ -53,39 +54,45 @@ class _SettingsPageState extends State<SettingsPage> {
                 const SizedBox(
                   height: 25,
                 ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            top: 13.0, bottom: 4, left: 17, right: 17),
-                        child: Text(
-                          'UPGRADE TO PRO ',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 23,
+                InkWell(
+                  onTap: (){
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const ProPricingPage()));
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 13.0, bottom: 4, left: 17, right: 17),
+                          child: Text(
+                            'UPGRADE TO PRO ',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 23,
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            bottom: 13.0, top: 3, left: 17, right: 17),
-                        child: Text(
-                          'SAFEGUARD YOUR PROTECTION IN UNEXPECTED SITUATIONS',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontSize: 15,
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 13.0, top: 3, left: 17, right: 17),
+                          child: Text(
+                            'SAFEGUARD YOUR PROTECTION IN UNEXPECTED SITUATIONS',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                              fontSize: 15,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(

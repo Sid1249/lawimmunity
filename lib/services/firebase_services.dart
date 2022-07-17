@@ -26,7 +26,30 @@ class FirebaseServices {
     return '';
   }
 
-  updateLocation() {}
+
+  Future<bool> isUserPro() async {
+    String? currentUserUID = getCurrentUser()?.uid;
+    Map<String, dynamic> currentUserMap = {};
+
+    DocumentSnapshot<dynamic> currentUserSnapshot = await FirebaseFirestore
+        .instance
+        .collection('users')
+        .doc(currentUserUID)
+        .get();
+
+    currentUserMap = currentUserSnapshot.data();
+
+    if(currentUserMap.containsKey('ispro') && currentUserMap['ispro']){
+      if(currentUserMap.containsKey('totalminutes') && currentUserMap.containsKey('minused') && currentUserMap['totalminutes'] >= currentUserMap['minused']){
+        if(currentUserMap.containsKey('subdate') && currentUserMap.containsKey('enddate') && currentUserMap['subdate'] < currentUserMap['enddate']){
+
+        }
+      }
+    }
+
+
+    return false;
+  }
 
   Future<List<Nominee>> getCurrentUserNomineeList() async {
     String? currentUserUID = getCurrentUser()?.uid;

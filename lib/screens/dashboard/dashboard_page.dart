@@ -1,8 +1,6 @@
-import 'dart:convert';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
 import 'package:lawimmunity/screens/location_page/location_page.dart';
@@ -10,7 +8,6 @@ import 'package:lawimmunity/screens/nominess_page/nominees_page.dart';
 import 'package:lawimmunity/screens/settings_page/settings_page.dart';
 import 'package:lawimmunity/screens/timeline_page/timeline_page.dart';
 import 'package:lawimmunity/screens/video_call_page/recording_services.dart';
-import 'package:lawimmunity/services/firebase_services.dart';
 import 'package:lawimmunity/services/permission_service.dart';
 import 'package:lawimmunity/services/shared_pref_services.dart';
 import 'package:lawimmunity/widgets/appbar.dart';
@@ -109,7 +106,7 @@ class DashboardPage extends StatelessWidget {
               TextButton(
                   onPressed: () {},
                   child: const AutoSizeText(
-                    'SEND SOS TO NOMINIES WITH LOCATTION',
+                    'SEND SOS TO NOMINEES WITH LOCATION',
                     maxLines: 1,
                     textAlign: TextAlign.center,
                     style: TextStyle(

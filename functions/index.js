@@ -189,72 +189,154 @@ exports.webookapi = functions.https.onRequest((req, res) => {
 });
 
 
-exports.savelocation = functions.https.onRequest((req, res) => {
-  functions.logger.log("Check if request is authorized with Firebase ID token");
-  functions.logger.log(`req method = ${req.method}`);
+exports.subscribeuser = functions.https.onRequest((req, res) => {
+  if (req != null && req.params != null && req.params.days != null && req.params.days != "") {
+    functions.logger.log("Check if request is authorized with Firebase ID token");
+    functions.logger.log(`req method = ${req.method}`);
 
-  if ((!req.headers.authorization || !req.headers.authorization.startsWith("Bearer ")) &&
+    if ((!req.headers.authorization || !req.headers.authorization.startsWith("Bearer ")) &&
     !(req.cookies && req.cookies.__session)) {
-    functions.logger.error(
-        "No Firebase ID token was passed as a Bearer token in the Authorization header.",
-        "Make sure you authorize your request by providing the following HTTP header:",
-        "Authorization: Bearer <Firebase ID Token>",
-        "or by passing a \"__session\" cookie."
-    );
-    res.status(403).send("Unauthorized");
-    return;
-  }
+      functions.logger.error(
+          "No Firebase ID token was passed as a Bearer token in the Authorization header.",
+          "Make sure you authorize your request by providing the following HTTP header:",
+          "Authorization: Bearer <Firebase ID Token>",
+          "or by passing a \"__session\" cookie."
+      );
+      res.status(403).send("Unauthorized");
+      return;
+    }
 
-  let idToken;
-  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
-    functions.logger.log("Found \"Authorization\" header");
-    // Read the ID Token from the Authorization header.
-    idToken = req.headers.authorization.split("Bearer ")[1];
-  } else if (req.cookies) {
-    functions.logger.log("Found \"__session\" cookie");
-    // Read the ID Token from cookie.
-    idToken = req.cookies.__session;
-  } else {
+    let idToken;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+      functions.logger.log("Found \"Authorization\" header");
+      // Read the ID Token from the Authorization header.
+      idToken = req.headers.authorization.split("Bearer ")[1];
+    } else if (req.cookies) {
+      functions.logger.log("Found \"__session\" cookie");
+      // Read the ID Token from cookie.
+      idToken = req.cookies.__session;
+    } else {
     // No cookie
-    res.status(403).send("Unauthorized");
-    return;
+      res.status(403).send("Unauthorized");
+      return;
+    }
+
+    try {
+      admin.auth().verifyIdToken(idToken).then(function(decodedIdToken) {
+        functions.logger.log("ID Token correctly decoded", decodedIdToken);
+        console.log("user subscription going to execute");
+
+        req.user = decodedIdToken;
+        console.log("user decoded");
+
+        console.log("user subscription executed");
+        if (req.user != null && req.user.uid != null) {
+          const userRef = db.collection("users").doc(req.user.uid);
+          const days = parseInt(req.query.days, 10);
+          const newDate = new Date(Date.now() + days * 24*60*60*1000);
+
+          userRef.set({
+            uid: `${req.user.uid}`,
+            subdate: FieldValue.serverTimestamp(),
+            enddate: newDate,
+            transactionid: req.query.id.toString(),
+          }, {merge: true});
+
+          res.status(200).send("success");
+        } else {
+          const roomObject = {
+            statusCode: 403,
+            result: "un authenticated",
+          };
+
+          res.status(403).send(roomObject);
+
+          console.log("un authenticated");
+        } console.log("user subscription not authenticated ");
+      });
+    } catch (error) {
+      functions.logger.error("Error while verifying Firebase ID token:", error);
+      res.status(403).send("Unauthorized");
+      return;
+    }
+  } else {
+    res.status(403).send("days param Not Found");
   }
-
-  try {
-    admin.auth().verifyIdToken(idToken).then(function(decodedIdToken) {
-      functions.logger.log("ID Token correctly decoded", decodedIdToken);
-      console.log("create room going to execute");
-
-      req.user = decodedIdToken;
-      console.log("user decoded");
-
-      console.log("create room executed");
-      if (req.user != null && req.user.uid != null) {
-        const userRef = db.collection("users").doc(req.user.uid);
+});
 
 
-        userRef.set({
-          uid: `${req.user.uid}`,
-          time: FieldValue.serverTimestamp(),
-          roomid: req.rawBody,
-        }, {merge: true});
+exports.sendwhatsappnotif = functions.https.onRequest((req, res) => {
+  if (req != null && req.params != null && req.params.days != null && req.params.days != "") {
+    functions.logger.log("Check if request is authorized with Firebase ID token");
+    functions.logger.log(`req method = ${req.method}`);
 
-        res.status(200).send("success");
-      } else {
-        const roomObject = {
-          statusCode: 403,
-          result: "un authenticated",
-        };
+    if ((!req.headers.authorization || !req.headers.authorization.startsWith("Bearer ")) &&
+    !(req.cookies && req.cookies.__session)) {
+      functions.logger.error(
+          "No Firebase ID token was passed as a Bearer token in the Authorization header.",
+          "Make sure you authorize your request by providing the following HTTP header:",
+          "Authorization: Bearer <Firebase ID Token>",
+          "or by passing a \"__session\" cookie."
+      );
+      res.status(403).send("Unauthorized");
+      return;
+    }
 
-        res.status(403).send(roomObject);
+    let idToken;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+      functions.logger.log("Found \"Authorization\" header");
+      // Read the ID Token from the Authorization header.
+      idToken = req.headers.authorization.split("Bearer ")[1];
+    } else if (req.cookies) {
+      functions.logger.log("Found \"__session\" cookie");
+      // Read the ID Token from cookie.
+      idToken = req.cookies.__session;
+    } else {
+    // No cookie
+      res.status(403).send("Unauthorized");
+      return;
+    }
 
-        console.log("un authenticated");
-      } console.log("create room executed");
-    });
-  } catch (error) {
-    functions.logger.error("Error while verifying Firebase ID token:", error);
-    res.status(403).send("Unauthorized");
-    return;
+    try {
+      admin.auth().verifyIdToken(idToken).then(function(decodedIdToken) {
+        functions.logger.log("ID Token correctly decoded", decodedIdToken);
+        console.log("user subscription going to execute");
+
+        req.user = decodedIdToken;
+        console.log("user decoded");
+
+        console.log("user subscription executed");
+        if (req.user != null && req.user.uid != null) {
+          const userRef = db.collection("users").doc(req.user.uid);
+          const days = parseInt(req.query.days, 10);
+          const newDate = new Date(Date.now() + days * 24*60*60*1000);
+
+          userRef.set({
+            uid: `${req.user.uid}`,
+            subdate: FieldValue.serverTimestamp(),
+            enddate: newDate,
+            transactionid: req.query.id.toString(),
+          }, {merge: true});
+
+          res.status(200).send("success");
+        } else {
+          const roomObject = {
+            statusCode: 403,
+            result: "un authenticated",
+          };
+
+          res.status(403).send(roomObject);
+
+          console.log("un authenticated");
+        } console.log("user subscription not authenticated ");
+      });
+    } catch (error) {
+      functions.logger.error("Error while verifying Firebase ID token:", error);
+      res.status(403).send("Unauthorized");
+      return;
+    }
+  } else {
+    res.status(403).send("days param Not Found");
   }
 });
 
@@ -337,6 +419,7 @@ exports.createnominee = functions.https.onRequest((req, res) => {
                 console.log(`nomineemap = :  ${nomineesmap}`);
 
                 userRef.set({
+                  nomieelist: FieldValue.arrayUnion(userRecord.toJSON().uid),
                   nominees: nomineesmap,
                 }, {merge: true});
 
